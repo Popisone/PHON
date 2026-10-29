@@ -8,9 +8,7 @@ program: (medium_def | component_def | flow_def)*
 medium_def: "medium" IDENT "{" field* "}"
 
 // ===== COMPONENTS =====
-component_def: component_type IDENT "{" field* "}"
-?component_type: "waveguide" | "resonator" | "mixer" | "phase_shifter"
-               | "interferometer" | "detector" | "source" | "splitter"
+component_def: COMPONENT_TYPE IDENT "{" field* "}"
 
 field: IDENT ":" value ";"
 
@@ -39,14 +37,17 @@ path_chain: POINT ("->" POINT)+
 ?add_expr: mul_expr (("+"|"-") mul_expr)*
 ?mul_expr: unary_expr (("*"|"/") unary_expr)*
 unary_expr: "-" unary_expr | postfix_expr
-postfix_expr: atom | atom unit
+postfix_expr: atom | atom UNIT
 ?atom: NUMBER | IDENT | "(" expr ")" | func_call | POINT
 
 func_call: IDENT "(" (expr ("," expr)*)? ")"
 
-unit: "nm" | "um" | "mm" | "GHz" | "THz" | "K" | "m/s" | "J" | "W"
-
 // ===== TERMINALS =====
+COMPONENT_TYPE: "waveguide" | "resonator" | "mixer" | "phase_shifter"
+              | "interferometer" | "detector" | "source" | "splitter"
+
+UNIT: "nm" | "um" | "mm" | "GHz" | "THz" | "K" | "m/s" | "J" | "W"
+
 POINT: /\[[^\[\]]+\]/
 IDENT: /[A-Za-z_][A-Za-z0-9_]*/
 NUMBER: /[0-9]+(\.[0-9]+)?/

@@ -1,4 +1,4 @@
-"""PHON parser - Lark-based parser producing AST nodes."""
+"""PHON parser - Lark-based parser producing AST nodes (v0.1)."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ class ParseError(Exception):
 
 
 def _serialize(node) -> str:
-    """Turn an AST fragment into a canonical string for v0.1."""
+    """Render any AST fragment to a canonical string."""
     if isinstance(node, Token):
         return str(node)
     if isinstance(node, Tree):
@@ -31,7 +31,38 @@ def _serialize(node) -> str:
     return str(node)
 
 
-def _field_dict(node) -> dict:
+def _find_program(tree):
+    """Locate the "program" tree regardless of start wrapper."""
+    if isinstance(tree, Tree):
+        if tree.data == "program":
+            return tree
+        for child in tree.children:
+            found = _find_program(child)
+            if found is not None:
+                return found
+    return None
+
+
+def _flatten_stmt(node):
+    """Unwrap Tree("flow_stmt", [X]) -> X if present."""
+    while (
+        isinstance(node, Tree)
+        and node.data == "flow_stmt"
+        and len(node.children) == 1
+    ):
+        node = node.children[0]
+    return node
+
+
+def _component_type_str(node) -> str:
+    """Handle both inline token and wrapped Tree(component_type, [Tok])."""
+    first = node.children[0]
+    while isinstance(first, Tree) and len(first.children) == 1:
+        first = first.children[0]
+    return str(first)
+
+
+def _fields_from(node) -> dict:
     fields = {}
     for child in node.children:
         if isinstance(child, Tree) and child.data == "field":
@@ -41,20 +72,22 @@ def _field_dict(node) -> dict:
 
 
 def _build_medium(node) -> Medium:
-    name = str(node.children[0])
-    return Medium(name=name, fields=_field_dict(node))
+    return Medium(name=str(node.children[0]), fields=_fields_from(node))
 
 
 def _build_component(node) -> Component:
-    ctype = str(node.children[0])
-    name = str(node.children[1])
-    return Component(type=ctype, name=name, fields=_field_dict(node))
+    return Component(
+        type=_component_type_str(node),
+        name=str(node.children[1]),
+        fields=_fields_from(node),
+    )
 
 
 def _build_flow(node) -> Flow:
     name = str(node.children[0])
     stmts = []
-    for child in node.children[1:]:
+    for raw in node.children[1:]:
+        child = _flatten_stmt(raw)
         if not isinstance(child, Tree):
             continue
         rule = child.data
@@ -85,18 +118,18 @@ def _build_flow(node) -> Flow:
     return Flow(name=name, statements=stmts)
 
 
-def _build_program(tree) -> Program:
-    program = Program()
-    for child in tree.children:
+def _build_program(program_node) -> Program:
+    prog = Program()
+    for child in program_node.children:
         if not isinstance(child, Tree):
             continue
         if child.data == "medium_def":
-            program.medium = _build_medium(child)
+            prog.medium = _build_medium(child)
         elif child.data == "component_def":
-            program.components.append(_build_component(child))
+            prog.components.append(_build_component(child))
         elif child.data == "flow_def":
-            program.flows.append(_build_flow(child))
-    return program
+            prog.flows.append(_build_flow(child))
+    return prog
 
 
 def parse(source: str) -> Program:
@@ -105,7 +138,11 @@ def parse(source: str) -> Program:
         tree = _parser.parse(source)
     except Exception as e:
         raise ParseError(str(e)) from e
-    return _build_program(tree)
+
+    prog_node = _find_program(tree)
+    if prog_node is None:
+        return Program()
+    return _build_program(prog_node)
 
 
 def parse_file(path: str) -> Program:
