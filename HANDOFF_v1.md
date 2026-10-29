@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 74 passed (13+8+10+10+10+8+10+5) |
+| Тестове | `tests/` | ✅ 85 passed (74 + 11 surrogate/isolation) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -188,3 +188,23 @@ git commit -m "Initial: PHON project skeleton"
   се запазват. `_semantic_children` изолира IDENT/expr от пунктуация.
 - ⚠️ v0.3 TODO: +, *, /, <, >, !=, <=, >= все още се губят (не се ползват).
 - ⏳ Следва: 4-битов брояч ИЛИ phonomena интеграция ИЛИ publish v0.2
+
+### 2026-10-29 - Сесия 9 (surrogate pipeline) - завършена
+- ✅ `scripts/generate_phon_dataset.py` - 256 / 1024 samples за < 1s
+- ✅ `scripts/train_surrogate.py` - single DecisionTree + analytic fallback
+- ✅ `scripts/train_surrogate_v2.py` - 4 модела + feature engineering
+- ✅ `scripts/test_local_llm.py` - probe за ollama / nobodywho
+- ✅ `tests/test_surrogate_pipeline.py` - 11 теста (общо 85)
+- 📊 РЕЗУЛТАТИ (1024 samples):
+    - DecisionTree(raw phases):  94.63%
+    - DecisionTree(+cos(delta)): 100.00%
+    - RandomForest(+cos):        100.00%
+    - Analytic rule (physics):   100.00%
+- 📚 УРОК: physics-informed feature engineering (cos of phase delta)
+  превръща 94.6% -> 100%. Data-driven ML се мъчи с кръгова граница.
+- 📚 УРОК: state isolation е коректна. Всеки Simulator е независим.
+  cfg НЕ се мутира. Deterministic при повторение.
+- 📚 УРОК: 256 samples са insufficient за DecisionTree; 1024 вече помагат,
+  но физичната характеристика е истинският ключ.
+- ⏳ Следва: (a) 4-битов брояч (композиция), (b) phonomena 1D FDTD,
+  (c) publish v0.2, (d) интеграция с локален LLM (нужен Ollama)
