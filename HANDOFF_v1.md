@@ -341,3 +341,19 @@ git commit -m "Initial: PHON project skeleton"
 - **C код:** 04_surrogate_model.h (за хардуерна интеграция).
 - **Примерен резултат:** ratio=4, bandwidth=2 -> 192.08 Gbps (98.6% точност) и 1.25 GHz компресирана честота.
 - **Заключение:** PHON може да работи като микро-услуга (microservice) в реални cloud среди.
+---
+
+### 🚀 ФИНАЛ НА СЕСИЯТА (2026-10-29) - v0.4.0 Released & GPU ML
+- **Версия:** v0.4.0 (успешно публикувана, Zenodo DOI обновен).
+- **Тестове:** 125 passed (за 0.45 сек).
+- **Нови функции (v0.4):** \compressor\, \channel\, \compress\, \	ransmit\.
+- **Физика:** Компресия (freq / ratio), Скорост (bandwidth * 100 Gbps).
+- **Производителност (CPU):** ~89,000 симулации/сек.
+- **Производителност (GPU - Kaggle Tesla T4):** 
+  - 398,811,828 симулации/сек (векторизирано генериране).
+  - 53,118,006 predictions/sec (PyTorch Neural Network).
+- **Интеграции:**
+  - FastAPI REST API (\pi_v04.py\) - работи локално.
+  - C код експорт (\04_surrogate_model.h\).
+  - ONNX експорт (\phon_v04_nn.onnx\) - готов за C#/C++/Web.
+- **Следващи стъпки (v0.5):** for loops, GDS export, или пълна ONNX интеграция в API-то.
