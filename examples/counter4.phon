@@ -1,0 +1,58 @@
+// PHON Example 4: 4-bit counter with conditional increment
+//
+// Demonstrates:
+//   - 4 memory cells (register)
+//   - if statement for conditional logic
+//   - read-modify-write cycle
+
+medium chip { material: Si; }
+
+// Bus + resonator per bit
+waveguide w0 { width: 200nm; }
+waveguide w1 { width: 200nm; }
+waveguide w2 { width: 200nm; }
+waveguide w3 { width: 200nm; }
+
+resonator b0 { at: [50, 10]; resonance: 5 GHz; }
+resonator b1 { at: [50, 30]; resonance: 6 GHz; }
+resonator b2 { at: [50, 50]; resonance: 7 GHz; }
+resonator b3 { at: [50, 70]; resonance: 8 GHz; }
+
+waveguide r0 { width: 200nm; }
+waveguide r1 { width: 200nm; }
+waveguide r2 { width: 200nm; }
+waveguide r3 { width: 200nm; }
+
+detector d0 { at: [100, 10]; in: [r0]; threshold: 0.5; }
+detector d1 { at: [100, 30]; in: [r1]; threshold: 0.5; }
+detector d2 { at: [100, 50]; in: [r2]; threshold: 0.5; }
+detector d3 { at: [100, 70]; in: [r3]; threshold: 0.5; }
+
+flow main {
+    // Initialize counter to 0000 (all resonators empty)
+    // Read current state
+    read(b0) -> r0;
+    read(b1) -> r1;
+    read(b2) -> r2;
+    read(b3) -> r3;
+    let v0 = detect(r0);
+    let v1 = detect(r1);
+    let v2 = detect(r2);
+    let v3 = detect(r3);
+
+    // Conditional increment: if v0 == 0 then b0 = 1, else carry
+    if v0 == 0 {
+        band x0 = 5 GHz @ phase 0;
+        emit(x0) -> w0;
+        capture(w0) -> b0;
+    } else {
+        // carry: clear b0, set b1
+        if v1 == 0 {
+            band x1 = 6 GHz @ phase 0;
+            emit(x1) -> w1;
+            capture(w1) -> b1;
+        }
+    }
+
+    return v0;
+}

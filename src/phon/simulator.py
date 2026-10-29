@@ -117,6 +117,47 @@ class Simulator:
         z = sum(s.amplitude * cmath.exp(1j * s.phase_rad) for s in present)
         return Signal(present[0].freq_ghz, cmath.phase(z), abs(z))
 
+
+    def _eval_condition(self, expr: str) -> bool:
+        """Evaluate a simple condition: X OP Y (OP in ==, !=, <, >, <=, >=)."""
+        import re
+        m = re.match(r"^\s*(\w+)\s*(==|!=|<=|>=|<|>)\s*(.+?)\s*$", expr)
+        if not m:
+            return False
+        lhs_name, op, rhs_str = m.groups()
+        lhs = self.values.get(lhs_name, 0)
+        # Try to coerce both sides to floats for numeric comparison
+        try:
+            lhs_num = float(lhs)
+        except (ValueError, TypeError):
+            lhs_num = lhs
+        try:
+            rhs_num = float(rhs_str)
+        except ValueError:
+            rhs_num = self.values.get(rhs_str, 0)
+            try:
+                rhs_num = float(rhs_num)
+            except (ValueError, TypeError):
+                pass
+        # Prefer numeric comparison when both sides are numeric
+        if isinstance(lhs_num, float) and isinstance(rhs_num, float):
+            a, b = lhs_num, rhs_num
+        else:
+            a, b = lhs, rhs_num
+        if op == "==":
+            return a == b
+        if op == "!=":
+            return a != b
+        if op == "<":
+            return a < b
+        if op == ">":
+            return a > b
+        if op == "<=":
+            return a <= b
+        if op == ">=":
+            return a >= b
+        return False
+
     def run(self, flow_name: str = "main") -> Any:
         flow = next(
             (f for f in self.config.get("flows", []) if f["name"] == flow_name),
@@ -164,6 +205,17 @@ class Simulator:
                 self.values[stmt["name"]] = self.bands[expr]
             else:
                 self.values[stmt["name"]] = expr
+        elif t == "if":
+            cond = stmt["condition"]
+            branch = stmt["then"] if self._eval_condition(cond) else stmt["else"]
+            for inner in branch:
+                self._step(inner)
+        elif t == "if":
+            cond = stmt["condition"]
+            # Evaluate condition: "x == 1" or "x != 0" etc.
+            branch = stmt["then"] if self._eval_condition(cond) else stmt["else"]
+            for inner in branch:
+                self._step(inner)
         elif t == "return":
             expr = stmt["expr"]
             if expr in self.values:

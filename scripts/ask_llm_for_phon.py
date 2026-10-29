@@ -68,27 +68,51 @@ def pick_template(prompt):
 
 # ---------- prompt for a real LLM ----------
 
-SYSTEM_PROMPT = """You are a PHON code generator.
-PHON is a declarative language for phononic circuits with three levels:
-  medium { ... }                    -- physical environment
-  waveguide/resonator/... { ... }   -- components
-  flow main { ... }                 -- dataflow
+SYSTEM_PROMPT = """You generate PHON source code. Output ONLY the PHON code (no markdown, no explanation).
 
-Statements available in a flow:
-  band  NAME = FREQ @ phase PHASE;
-  emit(NAME) -> BUS;
-  interfere(BUS1, BUS2) at GATE -> BUS_OUT;
-  capture(BUS) -> RESONATOR;
-  read(RESONATOR) -> BUS;
-  let X = detect(BUS);
-  return X;
+A PHON program has three parts, in this order:
+
+1. medium declaration (optional):
+   medium chip { material: Si; }
+
+2. component declarations:
+   waveguide NAME { width: 200nm; }
+   resonator NAME { at: [50, 50]; resonance: 5 GHz; }
+   interferometer NAME { at: [30, 15]; }
+   detector NAME { at: [40, 15]; in: [BUS]; threshold: 1.5; }
+
+3. flow main { ... } with statements:
+   band NAME = 5 GHz @ phase 0;
+   emit(NAME) -> BUS;
+   interfere(BUS1, BUS2) at GATE -> BUS_OUT;
+   capture(BUS) -> RESONATOR;
+   read(RESONATOR) -> BUS;
+   let VAR = detect(BUS);
+   return VAR;
+
+EXAMPLE - AND gate (copy this pattern):
+
+medium chip { material: Si; }
+waveguide input_a { width: 200nm; }
+waveguide input_b { width: 200nm; }
+interferometer and_gate { at: [30, 15]; in: [input_a, input_b]; out: output_bus; phase_match: (phase_a - phase_b) == 0; }
+detector d { at: [40, 15]; in: [output_bus]; threshold: 1.5; }
+flow main {
+    band a = 5 GHz @ phase 0;
+    band b = 5 GHz @ phase 0;
+    emit(a) -> input_a;
+    emit(b) -> input_b;
+    interfere(input_a, input_b) at and_gate -> output_bus;
+    let r = detect(output_bus);
+    return r;
+}
 
 Rules:
-  - Every component referenced in a flow must be declared.
-  - capture() target and read() source must be a resonator.
-  - A detector with threshold T outputs 1 if the bus amplitude >= T.
-
-Output ONLY the PHON source. No markdown fences. No explanations."""
+- Every BUS / GATE / RESONATOR referenced in flow must be declared above.
+- capture() target and read() source must be a resonator.
+- Always start with "medium" or a component declaration, NEVER with "band" or "flow".
+- Always end with "}".
+"""
 
 
 def _ollama_chat_content(response):

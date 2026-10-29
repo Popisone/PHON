@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 from .ast_nodes import (
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
-    LetStmt, Medium, Program, ReadStmt, ReturnStmt,
+    IfStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
 from .semantic import SemanticAnalyzer
 
@@ -44,6 +44,13 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
         return {"type": "let", "name": s.name, "expr": s.expr}
     if isinstance(s, ReturnStmt):
         return {"type": "return", "expr": s.expr}
+    if isinstance(s, IfStmt):
+        return {
+            "type": "if",
+            "condition": s.condition,
+            "then": [_stmt_to_dict(x) for x in s.then_body],
+            "else": [_stmt_to_dict(x) for x in s.else_body],
+        }
     raise TypeError(f"Unknown statement type: {type(s).__name__}")
 
 

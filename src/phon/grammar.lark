@@ -1,5 +1,4 @@
-// PHON v0.1.1 grammar - named terminals for operators
-
+// PHON v0.3 grammar - full operator set + if statement
 start: program
 
 program: (medium_def | component_def | flow_def)*
@@ -19,28 +18,36 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | read_stmt
           | let_stmt
           | return_stmt
+          | if_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
 emit_stmt: "emit" LPAREN expr RPAREN ARROW IDENT ";"
-interfere_stmt: "interfere" LPAREN IDENT "," IDENT RPAREN "at" IDENT ARROW IDENT ";"
+interfere_stmt: "interfere" LPAREN IDENT COMMA IDENT RPAREN "at" IDENT ARROW IDENT ";"
 capture_stmt: "capture" LPAREN IDENT RPAREN ARROW IDENT ";"
 read_stmt: "read" LPAREN IDENT RPAREN ARROW IDENT ";"
 let_stmt: "let" IDENT "=" expr ";"
 return_stmt: "return" expr ";"
+
+// Structured if: named rules make body boundaries explicit
+if_stmt: "if" condition "{" then_body "}" else_clause?
+condition: expr
+then_body: flow_stmt*
+else_clause: "else" "{" else_body "}"
+else_body: flow_stmt*
 
 ?value: path_chain | expr
 path_chain: POINT (ARROW POINT)+
 
 ?expr: range_expr
 ?range_expr: cmp_expr (RANGE cmp_expr)?
-?cmp_expr: add_expr (EQ add_expr)*
-?add_expr: mul_expr (MINUS mul_expr)*
-?mul_expr: unary_expr (("*"|"/") unary_expr)*
+?cmp_expr: add_expr ((EQ|NEQ|LEQ|GEQ|LT|GT) add_expr)*
+?add_expr: mul_expr ((PLUS|MINUS) mul_expr)*
+?mul_expr: unary_expr ((STAR|SLASH) unary_expr)*
 unary_expr: MINUS unary_expr | postfix_expr
 postfix_expr: atom | atom UNIT
 ?atom: NUMBER | IDENT | LPAREN expr RPAREN | func_call | POINT
 
-func_call: IDENT LPAREN (expr ("," expr)*)? RPAREN
+func_call: IDENT LPAREN (expr (COMMA expr)*)? RPAREN
 
 COMPONENT_TYPE: "waveguide" | "resonator" | "mixer" | "phase_shifter"
               | "interferometer" | "detector" | "source" | "splitter"
@@ -51,8 +58,17 @@ ARROW: "->"
 RANGE: ".."
 LPAREN: "("
 RPAREN: ")"
+PLUS: "+"
 MINUS: "-"
+STAR: "*"
+SLASH: "/"
 EQ: "=="
+NEQ: "!="
+LEQ: "<="
+GEQ: ">="
+LT: "<"
+GT: ">"
+COMMA: ","
 
 POINT: /\[[^\[\]]+\]/
 IDENT: /[A-Za-z_][A-Za-z0-9_]*/

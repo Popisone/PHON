@@ -73,3 +73,9 @@ class Program:
     medium: Optional[Medium] = None
     components: List[Component] = field(default_factory=list)
     flows: List[Flow] = field(default_factory=list)
+
+@dataclass
+class IfStmt:
+    condition: str
+    then_body: List[Any] = field(default_factory=list)
+    else_body: List[Any] = field(default_factory=list)
