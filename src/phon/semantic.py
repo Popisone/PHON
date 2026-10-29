@@ -1,11 +1,4 @@
-"""PHON semantic analyzer - verifies structural and physical compatibility.
-
-Implements the checks from SPECIFICATION.md Section 5.4:
-  - component name uniqueness
-  - component references in interfere/emit
-  - band frequency validity
-  - detect() requires a detector component
-"""
+"""PHON semantic analyzer (v0.1)."""
 
 from __future__ import annotations
 
@@ -13,8 +6,8 @@ from dataclasses import dataclass
 from typing import Dict, List
 
 from .ast_nodes import (
-    BandStmt, Component, EmitStmt, InterfereStmt,
-    LetStmt, Program, ReturnStmt,
+    BandStmt, CaptureStmt, Component, EmitStmt, InterfereStmt,
+    LetStmt, Program, ReadStmt, ReturnStmt,
 )
 
 __version__ = "0.1.0"
@@ -46,6 +39,7 @@ class SemanticAnalyzer:
         self._check_duplicate_components()
         self._check_interfere_references()
         self._check_emit_references()
+        self._check_capture_read_references()
         self._check_band_frequencies()
         self._check_detect_usage()
         return self.diagnostics
@@ -60,16 +54,12 @@ class SemanticAnalyzer:
         return not self.errors()
 
     def validate(self) -> None:
-        """Raise SemanticError if any errors were found."""
         errs = self.errors()
         if errs:
             raise SemanticError("; ".join(str(e) for e in errs))
 
     def _error(self, message: str, where: str = "") -> None:
         self.diagnostics.append(Diagnostic("error", message, where))
-
-    def _warning(self, message: str, where: str = "") -> None:
-        self.diagnostics.append(Diagnostic("warning", message, where))
 
     def _build_component_table(self) -> None:
         for c in self.program.components:
@@ -109,6 +99,37 @@ class SemanticAnalyzer:
                         f"undefined emit target '{stmt.target}' (flow '{flow.name}')",
                         where="emit",
                     )
+
+    def _check_capture_read_references(self) -> None:
+        for flow in self.program.flows:
+            for stmt in flow.statements:
+                if isinstance(stmt, CaptureStmt):
+                    self._require_component(stmt.source, "capture source", flow.name)
+                    self._require_resonator(stmt.target, "capture target", flow.name)
+                elif isinstance(stmt, ReadStmt):
+                    self._require_resonator(stmt.source, "read source", flow.name)
+                    self._require_component(stmt.target, "read target", flow.name)
+
+    def _require_component(self, name: str, role: str, flow_name: str) -> None:
+        if name not in self.components:
+            self._error(
+                f"undefined {role} '{name}' (flow '{flow_name}')",
+                where="capture/read",
+            )
+
+    def _require_resonator(self, name: str, role: str, flow_name: str) -> None:
+        if name not in self.components:
+            self._error(
+                f"undefined {role} '{name}' (flow '{flow_name}')",
+                where="capture/read",
+            )
+            return
+        c = self.components[name]
+        if c.type != "resonator":
+            self._error(
+                f"{role} '{name}' is not a resonator (type: {c.type})",
+                where="capture/read",
+            )
 
     def _check_band_frequencies(self) -> None:
         for flow in self.program.flows:

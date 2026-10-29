@@ -7,8 +7,8 @@ from pathlib import Path
 from lark import Lark, Token, Tree
 
 from .ast_nodes import (
-    BandStmt, Component, EmitStmt, Flow, InterfereStmt,
-    LetStmt, Medium, Program, ReturnStmt,
+    BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
+    LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
 
 __version__ = "0.1.0"
@@ -23,7 +23,6 @@ class ParseError(Exception):
 
 
 def _serialize(node) -> str:
-    """Render any AST fragment to a canonical string."""
     if isinstance(node, Token):
         return str(node)
     if isinstance(node, Tree):
@@ -32,7 +31,6 @@ def _serialize(node) -> str:
 
 
 def _find_program(tree):
-    """Locate the "program" tree regardless of start wrapper."""
     if isinstance(tree, Tree):
         if tree.data == "program":
             return tree
@@ -44,7 +42,6 @@ def _find_program(tree):
 
 
 def _flatten_stmt(node):
-    """Unwrap Tree("flow_stmt", [X]) -> X if present."""
     while (
         isinstance(node, Tree)
         and node.data == "flow_stmt"
@@ -55,7 +52,6 @@ def _flatten_stmt(node):
 
 
 def _component_type_str(node) -> str:
-    """Handle both inline token and wrapped Tree(component_type, [Tok])."""
     first = node.children[0]
     while isinstance(first, Tree) and len(first.children) == 1:
         first = first.children[0]
@@ -108,6 +104,16 @@ def _build_flow(node) -> Flow:
                 at=str(child.children[2]),
                 target=str(child.children[3]),
             ))
+        elif rule == "capture_stmt":
+            stmts.append(CaptureStmt(
+                source=str(child.children[0]),
+                target=str(child.children[1]),
+            ))
+        elif rule == "read_stmt":
+            stmts.append(ReadStmt(
+                source=str(child.children[0]),
+                target=str(child.children[1]),
+            ))
         elif rule == "let_stmt":
             stmts.append(LetStmt(
                 name=str(child.children[0]),
@@ -138,7 +144,6 @@ def parse(source: str) -> Program:
         tree = _parser.parse(source)
     except Exception as e:
         raise ParseError(str(e)) from e
-
     prog_node = _find_program(tree)
     if prog_node is None:
         return Program()

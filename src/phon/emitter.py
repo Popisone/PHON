@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from .ast_nodes import (
-    BandStmt, Component, EmitStmt, Flow, InterfereStmt,
-    LetStmt, Medium, Program, ReturnStmt,
+    BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
+    LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
 from .semantic import SemanticAnalyzer
 
@@ -36,6 +36,10 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
             "at": s.at,
             "target": s.target,
         }
+    if isinstance(s, CaptureStmt):
+        return {"type": "capture", "source": s.source, "target": s.target}
+    if isinstance(s, ReadStmt):
+        return {"type": "read", "source": s.source, "target": s.target}
     if isinstance(s, LetStmt):
         return {"type": "let", "name": s.name, "expr": s.expr}
     if isinstance(s, ReturnStmt):
@@ -51,16 +55,10 @@ def _flow_to_dict(f: Flow) -> Dict[str, Any]:
 
 
 def to_config(program: Program, *, validate: bool = True) -> Dict[str, Any]:
-    """Convert a Program AST to a JSON-serializable config dict.
-
-    If validate=True (default), the program is checked for semantic errors
-    and SemanticError is raised on failure.
-    """
     if validate:
         analyzer = SemanticAnalyzer(program)
         analyzer.analyze()
         analyzer.validate()
-
     return {
         "phon_version": CONFIG_VERSION,
         "medium": _medium_to_dict(program.medium) if program.medium else None,
@@ -69,15 +67,8 @@ def to_config(program: Program, *, validate: bool = True) -> Dict[str, Any]:
     }
 
 
-def to_json(
-    program: Program,
-    *,
-    validate: bool = True,
-    indent: int = 2,
-) -> str:
-    """Serialize a Program to a JSON string."""
-    cfg = to_config(program, validate=validate)
-    return json.dumps(cfg, indent=indent, ensure_ascii=False)
+def to_json(program: Program, *, validate: bool = True, indent: int = 2) -> str:
+    return json.dumps(to_config(program, validate=validate), indent=indent, ensure_ascii=False)
 
 
 def emit_file(
@@ -87,7 +78,6 @@ def emit_file(
     validate: bool = True,
     indent: int = 2,
 ) -> str:
-    """Parse a .phon file and return/write its JSON config."""
     from .parser import parse_file as _parse_file
     prog = _parse_file(src_path)
     text = to_json(prog, validate=validate, indent=indent)
@@ -98,7 +88,6 @@ def emit_file(
 
 if __name__ == "__main__":
     import sys
-
     if len(sys.argv) < 2:
         print("Usage: python -m phon.emitter <file.phon> [out.json]")
         sys.exit(2)

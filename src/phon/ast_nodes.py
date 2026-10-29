@@ -1,4 +1,4 @@
-"""PHON AST node classes (v0.1 minimal)."""
+"""PHON AST node classes (v0.1)."""
 
 from __future__ import annotations
 
@@ -36,6 +36,18 @@ class EmitStmt:
 class InterfereStmt:
     inputs: List[str]
     at: str
+    target: str
+
+
+@dataclass
+class CaptureStmt:
+    source: str
+    target: str
+
+
+@dataclass
+class ReadStmt:
+    source: str
     target: str
 
 

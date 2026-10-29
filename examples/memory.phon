@@ -1,0 +1,46 @@
+// PHON Primер 2: Memory cell (write once, read back)
+
+medium silicon_chip {
+    material: Si;
+    temperature: 4K;
+    size: [200um, 200um];
+    dispersion: acoustic_branch;
+    nonlinearity: chi2;
+    damping: 0.005;
+    boundary_conditions: absorbing;
+}
+
+waveguide write_bus {
+    path: [0, 50] -> [50, 50];
+    width: 300nm;
+    band: 5 GHz .. 10 GHz;
+}
+
+waveguide read_bus {
+    path: [80, 50] -> [130, 50];
+    width: 300nm;
+    band: 5 GHz .. 10 GHz;
+}
+
+resonator mem_cell {
+    at: [50, 60];
+    resonance: 5.2 GHz;
+    Q: 10000;
+    couples_to: write_bus;
+    capacity: 1;
+}
+
+detector read_detector {
+    at: [140, 50];
+    in: [read_bus];
+    threshold: 0.5;
+}
+
+flow main {
+    band w = 5.2 GHz @ phase 0;
+    emit(w) -> write_bus;
+    capture(write_bus) -> mem_cell;
+    read(mem_cell) -> read_bus;
+    let r = detect(read_bus);
+    return r;
+}

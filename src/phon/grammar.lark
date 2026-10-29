@@ -4,30 +4,30 @@ start: program
 
 program: (medium_def | component_def | flow_def)*
 
-// ===== MEDIUM =====
 medium_def: "medium" IDENT "{" field* "}"
 
-// ===== COMPONENTS =====
 component_def: COMPONENT_TYPE IDENT "{" field* "}"
 
 field: IDENT ":" value ";"
 
-// ===== FLOW =====
 flow_def: "flow" IDENT "{" flow_stmt* "}"
 
 ?flow_stmt: band_stmt
           | emit_stmt
           | interfere_stmt
+          | capture_stmt
+          | read_stmt
           | let_stmt
           | return_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
 emit_stmt: "emit" "(" expr ")" "->" IDENT ";"
 interfere_stmt: "interfere" "(" IDENT "," IDENT ")" "at" IDENT "->" IDENT ";"
+capture_stmt: "capture" "(" IDENT ")" "->" IDENT ";"
+read_stmt: "read" "(" IDENT ")" "->" IDENT ";"
 let_stmt: "let" IDENT "=" expr ";"
 return_stmt: "return" expr ";"
 
-// ===== VALUES / EXPRESSIONS =====
 ?value: path_chain | expr
 path_chain: POINT ("->" POINT)+
 
@@ -42,7 +42,6 @@ postfix_expr: atom | atom UNIT
 
 func_call: IDENT "(" (expr ("," expr)*)? ")"
 
-// ===== TERMINALS =====
 COMPONENT_TYPE: "waveguide" | "resonator" | "mixer" | "phase_shifter"
               | "interferometer" | "detector" | "source" | "splitter"
 
