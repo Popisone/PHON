@@ -120,3 +120,16 @@ The lesson: **physics-informed feature engineering beats pure data-driven ML** o
 ## Citation
 
 If you use PHON in research, please cite via `CITATION.cff` (coming in v0.3 release).
+
+## License
+
+PHON is dual-licensed:
+
+- **Code** (`src/phon/*.py`, `scripts/*.py`, `tests/*.py`) - [Apache License 2.0](LICENSE)
+- **Specification** (grammar, examples, language documentation) - [CC BY-SA 4.0](LICENSE-SPEC.md)
+
+See [LICENSE](LICENSE) and [LICENSE-SPEC.md](LICENSE-SPEC.md) for full terms.
+
+## Citation
+
+If you use PHON in academic work, please cite it. See [CITATION.cff](CITATION.cff).
