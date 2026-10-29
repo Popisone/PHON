@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 101 passed (13+8+10+10+10+8+10+5+11+7+9) |
+| Тестове | `tests/` | ✅ 111 passed (v0.3 + if + counter) |
 | Примери | `examples/` | ✅ 3 (and_gate, memory, register4) |
 
 ### Стек:
@@ -242,3 +242,13 @@ git commit -m "Initial: PHON project skeleton"
 - Инсталирай Ollama + llama3.2:1b за реален LLM
 - 8-bit register или 4-bit counter с if
 - Phonomena 1D FDTD интеграция
+
+### 2026-10-29 - Сесия 13 (v0.3 + Ollama + counter) - ЗАВЪРШЕНА
+- ✅ v0.3 grammar: +, *, /, <, >, !=, <=, >=
+- ✅ if statement: condition/then_body/else_body named rules
+- ✅ `examples/counter4.phon` - conditional register increment
+- ✅ Ollama 0.40.1 + llama3.2:1b
+- ✅ РЕАЛЕН LLM PIPELINE РАБОТИ: prompt -> PHON -> simulator = 1
+- 📚 Урок: `let` стойности се пазят като string; тестовете да правят int() coercion
+- 📚 Урок: few-shot example в SYSTEM_PROMPT е критичен за малки LLM
+- ⏳ Следва: Publish v0.3 (Zenodo DOI + GitHub release)
