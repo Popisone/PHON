@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 117 passed (v0.3 + if + counter + register8) |
+| Тестове | `tests/` | ✅ 122 passed (v0.3 + if + counter + register8) |
 | Примери | `examples/` | ✅ 5 (and_gate, memory, register4, counter4, register8) |
 
 ### Стек:
@@ -270,3 +270,10 @@ git commit -m "Initial: PHON project skeleton"
 - 🚀 FDTD / PHON speedup: **858x** (cached), **9x** (uncached).
 - 📚 Урок: Lark Earley parser има ужасяващ overhead за малки граматики. LALR е задължителен за production DSL. `lru_cache` елиминира повторното парсване.
 - ⏳ Следва: Publish v0.3.1 (tag, GitHub release) заради performance fix-а.
+---
+
+### 2026-10-29 (Край на сесията) - v0.3.1 Published & Cached
+- ✅ **122 теста** (добавени 5 нови за LALR + кеширане).
+- ✅ **Zenodo DOI:** 10.5281/zenodo.23770120 (добавен като бадж в README).
+- ✅ **GitHub:** https://github.com/Popisone/PHON
+- 🚀 **Утре:** Започваме работа по v0.4 (for loops / GDS export), или каквото решим.

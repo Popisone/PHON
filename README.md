@@ -1,18 +1,19 @@
-# PHON — Phononic Orchestration Notation
+# PHON (Phononic Orchestration Notation)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23770120.svg)](https://doi.org/10.5281/zenodo.23770120)
 > A declarative language for describing, compiling, and simulating phononic (acoustic-wave) computing circuits.
 
-**Version:** 0.3 · **Tests:** 117 passing · **License:** Apache-2.0 (code) + CC BY-SA 4.0 (spec)
+**Version:** 0.3 В· **Tests:** 117 passing В· **License:** Apache-2.0 (code) + CC BY-SA 4.0 (spec)
 
 ---
 
 ## What is PHON?
 
-PHON is a domain-specific language for phononic circuits. Where Verilog describes digital logic and CUDA describes GPU kernels, PHON describes **waveguides, resonators, interferometers, and detectors** — and the flow of acoustic signals between them.
+PHON is a domain-specific language for phononic circuits. Where Verilog describes digital logic and CUDA describes GPU kernels, PHON describes **waveguides, resonators, interferometers, and detectors** вЂ” and the flow of acoustic signals between them.
 
-Instead of boolean values and clock cycles, PHON works with **frequencies, phases, and amplitudes**. An "AND gate" is not a truth table — it is two waves that interfere constructively. A "memory cell" is a resonator that captures and releases a signal.
+Instead of boolean values and clock cycles, PHON works with **frequencies, phases, and amplitudes**. An "AND gate" is not a truth table вЂ” it is two waves that interfere constructively. A "memory cell" is a resonator that captures and releases a signal.
 
-## Quick example — an AND gate
+## Quick example вЂ” an AND gate
 
     medium chip { material: Si; }
 
@@ -63,23 +64,23 @@ Output: JSON config with `phon_version`, `medium`, `components`, `flows`.
 
 | File | Demonstrates | Result |
 | :--- | :--- | :--- |
-| `examples/and_gate.phon` | Wave interference → logical AND | `1` |
+| `examples/and_gate.phon` | Wave interference в†’ logical AND | `1` |
 | `examples/memory.phon` | Resonator as one memory cell | `1` |
-| `examples/register4.phon` | 4 memory cells → 4-bit register | `1010` |
-| `examples/counter4.phon` | `if` statement → conditional increment | `b0` set |
-| `examples/register8.phon` | 8 cells → one byte (0xB5) | `10110101` |
+| `examples/register4.phon` | 4 memory cells в†’ 4-bit register | `1010` |
+| `examples/counter4.phon` | `if` statement в†’ conditional increment | `b0` set |
+| `examples/register8.phon` | 8 cells в†’ one byte (0xB5) | `10110101` |
 
 ## Architecture
 
     src/phon/
-      lexer.py       — tokenizer
-      grammar.lark   — EBNF grammar
-      parser.py      — Lark-based parser → AST
-      ast_nodes.py   — Program, Medium, Component, Flow, statements
-      semantic.py    — validator (refs, thresholds, frequencies)
-      emitter.py     — AST → JSON config
-      simulator.py   — idealized complex-amplitude evaluator
-      fdtd.py        — 1D finite-difference time-domain (real physics)
+      lexer.py       вЂ” tokenizer
+      grammar.lark   вЂ” EBNF grammar
+      parser.py      вЂ” Lark-based parser в†’ AST
+      ast_nodes.py   вЂ” Program, Medium, Component, Flow, statements
+      semantic.py    вЂ” validator (refs, thresholds, frequencies)
+      emitter.py     вЂ” AST в†’ JSON config
+      simulator.py   вЂ” idealized complex-amplitude evaluator
+      fdtd.py        вЂ” 1D finite-difference time-domain (real physics)
 
 ## LLM + PHON (local, CPU-only)
 
@@ -89,7 +90,7 @@ PHON integrates with local LLMs via Ollama. No GPU needed.
     pip install ollama
     python scripts/ask_llm_for_phon.py "an AND gate with two inputs"
 
-Pipeline: prompt → LLM → PHON source → parser → semantic check → simulator → result.
+Pipeline: prompt в†’ LLM в†’ PHON source в†’ parser в†’ semantic check в†’ simulator в†’ result.
 
 If Ollama is not installed, a built-in offline fallback provides two templates (AND gate, memory cell).
 
@@ -105,12 +106,12 @@ The lesson: **physics-informed feature engineering beats pure data-driven ML** o
 
 ## Roadmap
 
-- [x] v0.1 — lexer, parser, simulator, 2 examples
-- [x] v0.2 — full operator set preserved in JSON (`->`, `..`, `()`, `-`, `==`)
-- [x] v0.3 — `if` statement, real Ollama LLM pipeline, 5 examples, 117 tests
-- [ ] v0.4 — `for` loops, function definitions
-- [ ] v0.5 — GDS export for real chip tape-out
-- [ ] v1.0 — Zenodo DOI + GitHub release
+- [x] v0.1 вЂ” lexer, parser, simulator, 2 examples
+- [x] v0.2 вЂ” full operator set preserved in JSON (`->`, `..`, `()`, `-`, `==`)
+- [x] v0.3 вЂ” `if` statement, real Ollama LLM pipeline, 5 examples, 117 tests
+- [ ] v0.4 вЂ” `for` loops, function definitions
+- [ ] v0.5 вЂ” GDS export for real chip tape-out
+- [ ] v1.0 вЂ” Zenodo DOI + GitHub release
 
 ## License
 
