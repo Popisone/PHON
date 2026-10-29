@@ -1,0 +1,46 @@
+// PHON Primer 1: Logic AND via interference
+
+medium silicon_chip {
+    material: Si;
+    temperature: 4K;
+    size: [100um, 100um];
+    dispersion: acoustic_branch;
+    nonlinearity: chi2;
+    damping: 0.01;
+    boundary_conditions: absorbing;
+}
+
+waveguide input_a {
+    path: [0, 10] -> [20, 10];
+    width: 200nm;
+    band: 5 GHz .. 10 GHz;
+}
+
+waveguide input_b {
+    path: [0, 20] -> [20, 20];
+    width: 200nm;
+    band: 5 GHz .. 10 GHz;
+}
+
+interferometer and_gate {
+    at: [30, 15];
+    in: [input_a, input_b];
+    out: output_bus;
+    phase_match: (phase_a - phase_b) == 0;
+}
+
+detector out_detector {
+    at: [40, 15];
+    in: [output_bus];
+    threshold: 0.5;
+}
+
+flow main {
+    band a = 5.2 GHz @ phase 0;
+    band b = 5.2 GHz @ phase 0;
+    emit(a) -> input_a;
+    emit(b) -> input_b;
+    interfere(input_a, input_b) at and_gate -> output_bus;
+    let result = detect(output_bus);
+    return result;
+}
