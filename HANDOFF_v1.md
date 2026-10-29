@@ -297,3 +297,21 @@ git commit -m "Initial: PHON project skeleton"
 - **Accuracy:** 100.0% (Перфектно научи физиката).
 - **SPEEDUP:** ML предсказва **321x по-бързо** от PHON симулатора.
 - **Заключение:** PHON е идеалният "учител" за създаване на свръх-бързи ML модели за Design Space Exploration.
+---
+
+### 📡 ML Pipeline за Компресия и Предаване (2026-10-29)
+- **Цел:** Да се докаже, че PHON може да предсказва не само логика (0/1), но и физични метрики (компресия, скорост).
+- **Модел:** Random Forest Regressor (100 дървета, max_depth=10).
+- **Резултати:**
+  - Compression Ratio R²: **0.9913** (RMSE: 2.78)
+  - Transmission Speed R²: **0.9926** (RMSE: 21.81)
+- **Примерно предсказване:** При 5GHz, 2GHz лента, Q=500, 10ns импулс -> **~100x компресия** и **~102 Gbps скорост**.
+- **Извод:** PHON може да служи като генератор на данни за телекомуникационни и компресионни ML модели.
+
+### 🗺️ План за v0.4 (Compression & Transmission)
+1. Разширяване на граматиката (grammar.lark):
+   - compressor: "compressor" IDENT "{" "ratio:" NUMBER ";" "}"
+   - channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" "}"
+   - compress_stmt, 	ransmit_stmt в low.
+2. Обновяване на semantic.py и emitter.py да разпознават новите компоненти.
+3. Обновяване на simulator.py да изчислява compression_ratio и 	ransmission_speed.
