@@ -1,0 +1,57 @@
+// PHON v0.1 grammar - derived from SPECIFICATION.md Section 4
+
+start: program
+
+program: (medium_def | component_def | flow_def)*
+
+// ===== MEDIUM =====
+medium_def: "medium" IDENT "{" field* "}"
+
+// ===== COMPONENTS =====
+component_def: component_type IDENT "{" field* "}"
+?component_type: "waveguide" | "resonator" | "mixer" | "phase_shifter"
+               | "interferometer" | "detector" | "source" | "splitter"
+
+field: IDENT ":" value ";"
+
+// ===== FLOW =====
+flow_def: "flow" IDENT "{" flow_stmt* "}"
+
+?flow_stmt: band_stmt
+          | emit_stmt
+          | interfere_stmt
+          | let_stmt
+          | return_stmt
+
+band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
+emit_stmt: "emit" "(" expr ")" "->" IDENT ";"
+interfere_stmt: "interfere" "(" IDENT "," IDENT ")" "at" IDENT "->" IDENT ";"
+let_stmt: "let" IDENT "=" expr ";"
+return_stmt: "return" expr ";"
+
+// ===== VALUES / EXPRESSIONS =====
+?value: path_chain | expr
+path_chain: POINT ("->" POINT)+
+
+?expr: range_expr
+?range_expr: cmp_expr (".." cmp_expr)?
+?cmp_expr: add_expr (("=="|"!="|"<="|">="|"<"|">") add_expr)*
+?add_expr: mul_expr (("+"|"-") mul_expr)*
+?mul_expr: unary_expr (("*"|"/") unary_expr)*
+unary_expr: "-" unary_expr | postfix_expr
+postfix_expr: atom | atom unit
+?atom: NUMBER | IDENT | "(" expr ")" | func_call | POINT
+
+func_call: IDENT "(" (expr ("," expr)*)? ")"
+
+unit: "nm" | "um" | "mm" | "GHz" | "THz" | "K" | "m/s" | "J" | "W"
+
+// ===== TERMINALS =====
+POINT: /\[[^\[\]]+\]/
+IDENT: /[A-Za-z_][A-Za-z0-9_]*/
+NUMBER: /[0-9]+(\.[0-9]+)?/
+
+%import common.WS
+%ignore WS
+%ignore /\/\/[^\n]*/
+%ignore /\/\*.*?\*\//s
