@@ -260,3 +260,13 @@ git commit -m "Initial: PHON project skeleton"
 - 📚 Урок: композицията работи - 4-bit register модел се разширява до 8-bit
   без нови езикови features. Просто повече резонатори/buses/detectors.
 - ⏳ Следва: Publish v0.3 (Zenodo DOI + GitHub release)
+
+### 2026-10-29 - Performance: LALR + lru_cache
+- ✅ `parser.py`: преминахме от Earley към **LALR** (fallback към earley при нужда) + `lru_cache` на `parse()`.
+- 📊 Резултати за 50-редов `.phon` файл:
+    - Преди: **56.5ms** (Earley parser)
+    - След (uncached): **2.37ms** (LALR) -> **~24x по-бърз**
+    - След (cached): **0.001ms** -> практически мигновено
+- 🚀 FDTD / PHON speedup: **858x** (cached), **9x** (uncached).
+- 📚 Урок: Lark Earley parser има ужасяващ overhead за малки граматики. LALR е задължителен за production DSL. `lru_cache` елиминира повторното парсване.
+- ⏳ Следва: Publish v0.3.1 (tag, GitHub release) заради performance fix-а.
