@@ -26,11 +26,11 @@
 | Компонент | Файл | Статус |
 | :--- | :--- | :--- |
 | Спецификация | `SPECIFICATION.md` | ✅ v0.1 |
-| Лексер | `src/phon/lexer.py` | ⏳ TODO |
+| Лексер | `src/phon/lexer.py` | ✅ v0.1 (13 теста) |
 | Парсер | `src/phon/parser.py` | ⏳ TODO |
 | AST | `src/phon/ast_nodes.py` | ⏳ TODO |
 | Семантика | `src/phon/semantic.py` | ⏳ TODO |
-| Тестове | `tests/test_lexer.py`, `test_parser.py` | ⏳ TODO |
+| Тестове | `tests/test_lexer.py` | ✅ 13 passed |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -114,3 +114,9 @@ git commit -m "Initial: PHON project skeleton"
 - Проект стартиран
 - Създаден HANDOFF_v1.md
 - Следва: лексер
+
+### 2026-10-29 - Сесия 2 (лексер)
+- ✅ `src/phon/lexer.py` — 150 реда, токенизира всички лексеми
+- ✅ `tests/test_lexer.py` — 13 теста, всички PASS
+- ✅ `conftest.py` + `src/phon/__init__.py`
+- ⏳ Следва: парсер с `lark` (Задача #2)
