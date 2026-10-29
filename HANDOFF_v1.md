@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 31 passed (13 lexer + 8 parser + 10 semantic) |
+| Тестове | `tests/` | ✅ 51 passed (13+8+10+10+10) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -148,3 +148,14 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ `tests/test_semantic.py` - 10 теста (общо 31 в проекта)
 - ✅ Проверки: дубликати, interfere refs, emit refs, band freq, detect w/o detector
 - ⏳ Следва: генератор на JSON конфигурация (Задача #4)
+
+### 2026-10-29 - Сесия 6 (симулатор) - завършена
+- ✅ `src/phon/simulator.py` - idealized wave physics (complex interference)
+- ✅ `tests/test_simulator.py` - 10 теста (общо 51 в проекта)
+- ✅ Editable install - `python -m phon.emitter` работи
+- ✅ and_gate.phon: threshold 1.5, amp=2.0, AND логика от физика
+- 📚 Урок: here-string `n (LF) vs файлове `r`n (CRLF) -> .Contains() не работи
+  -> ползвай regex с (?s) или [regex]::Escape.
+- ⚠️ ТЕХНИЧЕСКИ ДЪЛГ (v0.2): `_serialize` губи ->, .., () заради анонимни литерали
+  в `path`, `band`, `phase_match`. v0.2: именувани терминали ARROW/RANGE/LPAREN.
+- ⏳ Следва: Пример 2 - memory.phon (резонатор, capture/read, state)
