@@ -27,10 +27,10 @@
 | :--- | :--- | :--- |
 | Спецификация | `SPECIFICATION.md` | ✅ v0.1 |
 | Лексер | `src/phon/lexer.py` | ✅ v0.1 (13 теста) |
-| Парсер | `src/phon/parser.py` | ⏳ TODO |
-| AST | `src/phon/ast_nodes.py` | ⏳ TODO |
+| Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
+| AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ⏳ TODO |
-| Тестове | `tests/test_lexer.py` | ✅ 13 passed |
+| Тестове | `tests/` | ✅ 21 passed (13 lexer + 8 parser) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -120,3 +120,10 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ `tests/test_lexer.py` — 13 теста, всички PASS
 - ✅ `conftest.py` + `src/phon/__init__.py`
 - ⏳ Следва: парсер с `lark` (Задача #2)
+
+### 2026-10-29 - Сесия 3 (парсер)
+- ✅ `src/phon/grammar.lark` — Lark граматика (EBNF -> Lark)
+- ✅ `src/phon/ast_nodes.py` — AST dataclass-ове
+- ✅ `src/phon/parser.py` — Lark earley парсер + AST builder
+- ✅ `tests/test_parser.py` — 8 теста (общо 21 в проекта)
+- ⏳ Следва: семантичен анализ (Задача #3 - правила 5.4)
