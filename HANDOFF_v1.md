@@ -142,3 +142,9 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ `tests/test_semantic.py` - 10 теста (общо 31 в проекта)
 - ✅ Проверки: дубликати, interfere refs, emit refs, band freq, detect w/o detector
 - ⏳ Следва: генератор на JSON конфигурация (Задача #4)
+
+### 2026-10-29 - Сесия 4 (семантика) - завършена
+- ✅ `src/phon/semantic.py` - SemanticAnalyzer с 5 проверки
+- ✅ `tests/test_semantic.py` - 10 теста (общо 31 в проекта)
+- ✅ Проверки: дубликати, interfere refs, emit refs, band freq, detect w/o detector
+- ⏳ Следва: генератор на JSON конфигурация (Задача #4)
