@@ -315,3 +315,12 @@ git commit -m "Initial: PHON project skeleton"
    - compress_stmt, 	ransmit_stmt в low.
 2. Обновяване на semantic.py и emitter.py да разпознават новите компоненти.
 3. Обновяване на simulator.py да изчислява compression_ratio и 	ransmission_speed.
+---
+
+### 🎉 v0.4 RELEASED (2026-10-29)
+- **Нови компоненти:** compressor (ratio) и channel (bandwidth).
+- **Нови команди:** compress(...) at ... -> ... и 	ransmit(...) via ... -> ....
+- **Физика в симулатора:** Компресия намалява честотата (freq / ratio). Предаване изчислява скорост (bandwidth * 100 Gbps).
+- **Тестове:** 125 passed (3 нови за v0.4).
+- **Пълен pipeline:** Парсер -> Semantic -> Emitter -> Simulator -> Резултат (200.0 Gbps в теста).
+- **Следва:** v0.4.1 (Release, DOI, ML интеграция) или v0.5 (for loops, GDS export).
