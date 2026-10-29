@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 85 passed (74 + 11 surrogate/isolation) |
+| Тестове | `tests/` | ✅ 101 passed (85 + 7 register4 + 9 fdtd) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -208,3 +208,12 @@ git commit -m "Initial: PHON project skeleton"
   но физичната характеристика е истинският ключ.
 - ⏳ Следва: (a) 4-битов брояч (композиция), (b) phonomena 1D FDTD,
   (c) publish v0.2, (d) интеграция с локален LLM (нужен Ollama)
+
+### 2026-10-29 - Fix FDTD energy test
+- 🐛 `test_energy_preserved_approximately_no_boundary` беше грешен.
+  Zero-velocity init (u_prev = u) кара пулса да се разцепи на 2 ->
+  енергията пада на ~50% (точна физика, не бъг).
+- ✅ Заменен с `test_energy_does_not_explode` + `test_energy_halves_after_full_split`
+- 📚 Урок: FDTD начални условия определят физиката. u_prev = u ->
+  стоящ пулс, който се разцепва. За дясно-движещ пулс трябва
+  u_prev != u (v0.3 TODO: `set_right_moving_gaussian`).
