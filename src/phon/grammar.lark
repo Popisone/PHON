@@ -1,4 +1,4 @@
-// PHON v0.1 grammar - derived from SPECIFICATION.md Section 4
+// PHON v0.1.1 grammar - named terminals for operators
 
 start: program
 
@@ -21,31 +21,38 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | return_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
-emit_stmt: "emit" "(" expr ")" "->" IDENT ";"
-interfere_stmt: "interfere" "(" IDENT "," IDENT ")" "at" IDENT "->" IDENT ";"
-capture_stmt: "capture" "(" IDENT ")" "->" IDENT ";"
-read_stmt: "read" "(" IDENT ")" "->" IDENT ";"
+emit_stmt: "emit" LPAREN expr RPAREN ARROW IDENT ";"
+interfere_stmt: "interfere" LPAREN IDENT "," IDENT RPAREN "at" IDENT ARROW IDENT ";"
+capture_stmt: "capture" LPAREN IDENT RPAREN ARROW IDENT ";"
+read_stmt: "read" LPAREN IDENT RPAREN ARROW IDENT ";"
 let_stmt: "let" IDENT "=" expr ";"
 return_stmt: "return" expr ";"
 
 ?value: path_chain | expr
-path_chain: POINT ("->" POINT)+
+path_chain: POINT (ARROW POINT)+
 
 ?expr: range_expr
-?range_expr: cmp_expr (".." cmp_expr)?
-?cmp_expr: add_expr (("=="|"!="|"<="|">="|"<"|">") add_expr)*
-?add_expr: mul_expr (("+"|"-") mul_expr)*
+?range_expr: cmp_expr (RANGE cmp_expr)?
+?cmp_expr: add_expr (EQ add_expr)*
+?add_expr: mul_expr (MINUS mul_expr)*
 ?mul_expr: unary_expr (("*"|"/") unary_expr)*
-unary_expr: "-" unary_expr | postfix_expr
+unary_expr: MINUS unary_expr | postfix_expr
 postfix_expr: atom | atom UNIT
-?atom: NUMBER | IDENT | "(" expr ")" | func_call | POINT
+?atom: NUMBER | IDENT | LPAREN expr RPAREN | func_call | POINT
 
-func_call: IDENT "(" (expr ("," expr)*)? ")"
+func_call: IDENT LPAREN (expr ("," expr)*)? RPAREN
 
 COMPONENT_TYPE: "waveguide" | "resonator" | "mixer" | "phase_shifter"
               | "interferometer" | "detector" | "source" | "splitter"
 
 UNIT: "nm" | "um" | "mm" | "GHz" | "THz" | "K" | "m/s" | "J" | "W"
+
+ARROW: "->"
+RANGE: ".."
+LPAREN: "("
+RPAREN: ")"
+MINUS: "-"
+EQ: "=="
 
 POINT: /\[[^\[\]]+\]/
 IDENT: /[A-Za-z_][A-Za-z0-9_]*/
