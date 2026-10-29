@@ -30,8 +30,8 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 101 passed (85 + 7 register4 + 9 fdtd) |
-| Примери | `examples/*.phon` | 🟡 and_gate.phon |
+| Тестове | `tests/` | ✅ 101 passed (13+8+10+10+10+8+10+5+11+7+9) |
+| Примери | `examples/` | ✅ 3 (and_gate, memory, register4) |
 
 ### Стек:
 - Python 3.10+, `lark`, `pytest`
@@ -217,3 +217,28 @@ git commit -m "Initial: PHON project skeleton"
 - 📚 Урок: FDTD начални условия определят физиката. u_prev = u ->
   стоящ пулс, който се разцепва. За дясно-движещ пулс трябва
   u_prev != u (v0.3 TODO: `set_right_moving_gaussian`).
+
+### 2026-10-29 - Сесия 12 (D+E) - завършена
+
+**D) Ollama интеграция:**
+- ✅ `scripts/ask_llm_for_phon.py` - prompt -> PHON -> validate -> simulate
+- ✅ 2 offline templates (and gate, memory cell)
+- ✅ Автоматично ползва Ollama ако е инсталиран
+
+**E) Wrap-up - ОБОБЩЕНИЕ НА ДЕНЯ:**
+
+Постигнато днес:
+- 12 sessions, 15+ commits, 101 теста
+- Ядро: lexer, parser, semantic, emitter, simulator (idealized + FDTD)
+- Примери: and_gate, memory, register4
+- ML: physics-informed surrogate (86.5% -> 100% с cos(delta))
+- AI: probe + offline fallback + ready за Ollama
+- v0.2 grammar: ->, .., (), -, == запазени в JSON
+
+Следващи стъпки (v0.3 backlog):
+- Publish v0.2 (Zenodo DOI + GitHub release + README)
+- v0.3 grammar: +, *, /, <, >, !=, <=, >=
+- set_right_moving_gaussian() в FDTD
+- Инсталирай Ollama + llama3.2:1b за реален LLM
+- 8-bit register или 4-bit counter с if
+- Phonomena 1D FDTD интеграция
