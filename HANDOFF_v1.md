@@ -332,3 +332,12 @@ git commit -m "Initial: PHON project skeleton"
 - **Inference:** 150,424 predictions/sec.
 - **Speedup:** ML е **2x по-бърз** от PHON симулатора (заради изключително бързата нова физика).
 - **Извод:** PHON v0.4 е готов за интеграция в по-големи ML pipeline-и.
+---
+
+### 🌐 REST API Интеграция (2026-10-29)
+- **Сървър:** FastAPI (pi_v04.py), работи на http://127.0.0.1:8000/predict.
+- **Клиент:** client_v04.py изпраща POST заявка.
+- **Модел:** 04_surrogate.pkl (Random Forest, 20 дървета, max_depth=5).
+- **C код:** 04_surrogate_model.h (за хардуерна интеграция).
+- **Примерен резултат:** ratio=4, bandwidth=2 -> 192.08 Gbps (98.6% точност) и 1.25 GHz компресирана честота.
+- **Заключение:** PHON може да работи като микро-услуга (microservice) в реални cloud среди.
