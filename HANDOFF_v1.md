@@ -29,8 +29,8 @@
 | Лексер | `src/phon/lexer.py` | ✅ v0.1 (13 теста) |
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
-| Семантика | `src/phon/semantic.py` | ⏳ TODO |
-| Тестове | `tests/` | ✅ 21 passed (13 lexer + 8 parser) |
+| Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
+| Тестове | `tests/` | ✅ 31 passed (13 lexer + 8 parser + 10 semantic) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -136,3 +136,9 @@ git commit -m "Initial: PHON project skeleton"
 - 📚 Урок: Lark изхвърля анонимни string литерали от дървото
   -> дефинирай ги като именувани терминали (COMPONENT_TYPE, UNIT)
 - ⏳ Следва: семантичен анализ (правила 5.4)
+
+### 2026-10-29 - Сесия 4 (семантика) - завършена
+- ✅ `src/phon/semantic.py` - SemanticAnalyzer с 5 проверки
+- ✅ `tests/test_semantic.py` - 10 теста (общо 31 в проекта)
+- ✅ Проверки: дубликати, interfere refs, emit refs, band freq, detect w/o detector
+- ⏳ Следва: генератор на JSON конфигурация (Задача #4)
