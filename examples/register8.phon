@@ -1,0 +1,102 @@
+// PHON Example 5: 8-bit register (one byte)
+//
+// Demonstrates scaling: 8 independent memory cells, each holding one bit.
+// We write the byte 10110101 (0xB5 = 181 decimal), then read all 8 bits
+// back and verify they match.
+//
+// This is pure composition of the 4-bit register pattern. No new language
+// features are required - just more resonators, buses, and detectors.
+
+medium silicon_chip {
+    material: Si;
+    temperature: 4K;
+    size: [1000um, 1000um];
+    dispersion: acoustic_branch;
+    nonlinearity: chi2;
+    damping: 0.005;
+    boundary_conditions: absorbing;
+}
+
+// Write buses - one per bit, distinct frequency bands
+waveguide w0 { path: [0, 10] -> [50, 10]; width: 200nm; band: 5 GHz .. 6 GHz; }
+waveguide w1 { path: [0, 20] -> [50, 20]; width: 200nm; band: 6 GHz .. 7 GHz; }
+waveguide w2 { path: [0, 30] -> [50, 30]; width: 200nm; band: 7 GHz .. 8 GHz; }
+waveguide w3 { path: [0, 40] -> [50, 40]; width: 200nm; band: 8 GHz .. 9 GHz; }
+waveguide w4 { path: [0, 50] -> [50, 50]; width: 200nm; band: 9 GHz .. 10 GHz; }
+waveguide w5 { path: [0, 60] -> [50, 60]; width: 200nm; band: 10 GHz .. 11 GHz; }
+waveguide w6 { path: [0, 70] -> [50, 70]; width: 200nm; band: 11 GHz .. 12 GHz; }
+waveguide w7 { path: [0, 80] -> [50, 80]; width: 200nm; band: 12 GHz .. 13 GHz; }
+
+// Read buses
+waveguide r0 { path: [70, 10] -> [120, 10]; width: 200nm; band: 5 GHz .. 6 GHz; }
+waveguide r1 { path: [70, 20] -> [120, 20]; width: 200nm; band: 6 GHz .. 7 GHz; }
+waveguide r2 { path: [70, 30] -> [120, 30]; width: 200nm; band: 7 GHz .. 8 GHz; }
+waveguide r3 { path: [70, 40] -> [120, 40]; width: 200nm; band: 8 GHz .. 9 GHz; }
+waveguide r4 { path: [70, 50] -> [120, 50]; width: 200nm; band: 9 GHz .. 10 GHz; }
+waveguide r5 { path: [70, 60] -> [120, 60]; width: 200nm; band: 10 GHz .. 11 GHz; }
+waveguide r6 { path: [70, 70] -> [120, 70]; width: 200nm; band: 11 GHz .. 12 GHz; }
+waveguide r7 { path: [70, 80] -> [120, 80]; width: 200nm; band: 12 GHz .. 13 GHz; }
+
+// 8 memory cells
+resonator b0 { at: [55, 10]; resonance: 5.5 GHz; Q: 10000; couples_to: w0; capacity: 1; }
+resonator b1 { at: [55, 20]; resonance: 6.5 GHz; Q: 10000; couples_to: w1; capacity: 1; }
+resonator b2 { at: [55, 30]; resonance: 7.5 GHz; Q: 10000; couples_to: w2; capacity: 1; }
+resonator b3 { at: [55, 40]; resonance: 8.5 GHz; Q: 10000; couples_to: w3; capacity: 1; }
+resonator b4 { at: [55, 50]; resonance: 9.5 GHz; Q: 10000; couples_to: w4; capacity: 1; }
+resonator b5 { at: [55, 60]; resonance: 10.5 GHz; Q: 10000; couples_to: w5; capacity: 1; }
+resonator b6 { at: [55, 70]; resonance: 11.5 GHz; Q: 10000; couples_to: w6; capacity: 1; }
+resonator b7 { at: [55, 80]; resonance: 12.5 GHz; Q: 10000; couples_to: w7; capacity: 1; }
+
+// 8 detectors
+detector d0 { at: [130, 10]; in: [r0]; threshold: 0.5; }
+detector d1 { at: [130, 20]; in: [r1]; threshold: 0.5; }
+detector d2 { at: [130, 30]; in: [r2]; threshold: 0.5; }
+detector d3 { at: [130, 40]; in: [r3]; threshold: 0.5; }
+detector d4 { at: [130, 50]; in: [r4]; threshold: 0.5; }
+detector d5 { at: [130, 60]; in: [r5]; threshold: 0.5; }
+detector d6 { at: [130, 70]; in: [r6]; threshold: 0.5; }
+detector d7 { at: [130, 80]; in: [r7]; threshold: 0.5; }
+
+flow main {
+    // Write byte 10110101 (0xB5 = 181 decimal)
+    // Active bits: 7, 5, 4, 2, 0
+    band x7 = 12.5 GHz @ phase 0;
+    band x5 = 10.5 GHz @ phase 0;
+    band x4 = 9.5 GHz @ phase 0;
+    band x2 = 7.5 GHz @ phase 0;
+    band x0 = 5.5 GHz @ phase 0;
+
+    emit(x7) -> w7;
+    emit(x5) -> w5;
+    emit(x4) -> w4;
+    emit(x2) -> w2;
+    emit(x0) -> w0;
+
+    capture(w7) -> b7;
+    capture(w5) -> b5;
+    capture(w4) -> b4;
+    capture(w2) -> b2;
+    capture(w0) -> b0;
+
+    // Read all 8 bits back
+    read(b0) -> r0;
+    read(b1) -> r1;
+    read(b2) -> r2;
+    read(b3) -> r3;
+    read(b4) -> r4;
+    read(b5) -> r5;
+    read(b6) -> r6;
+    read(b7) -> r7;
+
+    // Detect each bit
+    let v0 = detect(r0);
+    let v1 = detect(r1);
+    let v2 = detect(r2);
+    let v3 = detect(r3);
+    let v4 = detect(r4);
+    let v5 = detect(r5);
+    let v6 = detect(r6);
+    let v7 = detect(r7);
+
+    return v7;
+}
