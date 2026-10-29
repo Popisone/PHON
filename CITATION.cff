@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use PHON in academic work, please cite this repository."
+title: "PHON: Phononic Orchestration Notation"
+abstract: >-
+  A declarative DSL for programming phononic (acoustic) computing circuits.
+  Programs specify physical media, wave components, and signal flow using
+  frequencies, phases, and amplitudes. Includes a reference simulator
+  (idealized complex amplitude and 1D FDTD) and an LLM-assisted code
+  generation pipeline. The specification is licensed under CC BY-SA 4.0;
+  the reference implementation under Apache 2.0.
+authors:
+  - name: "The PHON Authors"
+version: "0.3.0"
+date-released: "2026-10-29"
+license: "Apache-2.0"
+license-url: "https://www.apache.org/licenses/LICENSE-2.0"
+# TODO: Replace with your actual repository URL before publishing
+repository-code: "https://github.com/Popisone/Popisone"
+keywords:
+  - phononics
+  - acoustic computing
+  - DSL
+  - declarative programming
+  - wave interference
+  - FDTD
+  - computational physics

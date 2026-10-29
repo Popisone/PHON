@@ -1,0 +1,33 @@
+{
+  "title": "PHON: Phononic Orchestration Notation",
+  "description": "<p>A declarative DSL for programming phononic (acoustic) computing circuits. Programs specify physical media, wave components, and signal flow using frequencies, phases, and amplitudes. Includes a reference simulator (idealized complex amplitude and 1D FDTD) and an LLM-assisted code generation pipeline.</p><p>The language specification is licensed under CC BY-SA 4.0; the reference implementation is licensed under Apache 2.0.</p>",
+  "creators": [
+    {
+      "name": "The PHON Authors"
+    }
+  ],
+  "license": {
+    "id": "Apache-2.0"
+  },
+  "upload_type": "software",
+  "access_right": "open",
+  "version": "0.3.0",
+  "publication_date": "2026-10-29",
+  "keywords": [
+    "phononics",
+    "acoustic computing",
+    "DSL",
+    "declarative programming",
+    "wave interference",
+    "FDTD",
+    "computational physics"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/Popisone/Popisone",
+      "resource_type": "software"
+    }
+  ],
+  "language": "eng"
+}
