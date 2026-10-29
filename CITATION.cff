@@ -15,7 +15,7 @@ date-released: "2026-10-29"
 license: "Apache-2.0"
 license-url: "https://www.apache.org/licenses/LICENSE-2.0"
 # TODO: Replace with your actual repository URL before publishing
-repository-code: "https://github.com/Popisone/Popisone"
+repository-code: "https://github.com/Popisone/PHON"
 keywords:
   - phononics
   - acoustic computing
