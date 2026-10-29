@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-29
+
+### Added
+- **Compression and transmission primitives** — first extension of PHON beyond logic gates
+- New components: `compressor { ratio }` and `channel { bandwidth }`
+- New flow commands: `compress(data) at c1 -> compressed` and `transmit(compressed) via ch1 -> received`
+- Grammar: added rules for `compressor`, `channel`, `compress_stmt`, `transmit_stmt`
+- AST nodes: `Compressor`, `Channel`, `CompressStmt`, `TransmitStmt`
+- Semantic checks: compressor ratio must be positive, channel bandwidth must be positive, compress/transmit references must resolve
+- Simulator physics: frequency divided by ratio (compression), speed = bandwidth * 100 Gbps
+- 3 new tests: end-to-end simulation, missing compressor, non-positive ratio (total: 125 tests)
+
+### Changed
+- `emitter._component_to_dict` now handles `Compressor` and `Channel`
+- `emitter._stmt_to_dict` now handles `CompressStmt` and `TransmitStmt`
+- `simulator._step` now handles `compress` and `transmit` types
+- Removed duplicate `if` block in `_step`
+
+### Fixed
+- `semantic._check_detect_usage` no longer crashes on components without `.type`
+
 ## [0.3.1] - 2026-10-29
 
 ### Fixed
