@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 59 passed (13+8+10+10+10+8) |
+| Тестове | `tests/` | ✅ 69 passed (13+8+10+10+10+8+10) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -169,3 +169,11 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ `examples/memory.phon` - първи пример с памет
 - ✅ `tests/test_memory.py` - 8 теста (общо 59)
 - ⏳ Следва: Сесия 7b - симулатор със state (capture/read) + simulation тестове
+
+### 2026-10-29 - Сесия 7b (симулатор със state) - завършена
+- ✅ `src/phon/simulator.py` - resonators dict + capture/read handlers
+- ✅ `tests/test_memory_sim.py` - 10 теста (общо 69 в проекта)
+- ✅ `memory.phon` end-to-end: write -> capture -> read -> detect = 1
+- ✅ `read` прави snapshot, не препратка (2 независими read-а работят)
+- ✅ Два резонатора пазят независими стойности (m1: 5GHz/0, m2: 7GHz/1)
+- ⏳ Следва: по-сложен пример (напр. 4-битов брояч) или v0.2 grammar fix
