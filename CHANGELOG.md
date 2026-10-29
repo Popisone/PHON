@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-29
+
+### Fixed
+- **Massive performance improvement**: Switched parser from Earley to LALR (with fallback) and added lru_cache to parse(). Parse time dropped from ~56ms to ~2.4ms (24x faster). Cached parses are practically free (~0.001ms).
+
 ## [0.3.0] - 2026-10-29
 
 ### Added
