@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 51 passed (13+8+10+10+10) |
+| Тестове | `tests/` | ✅ 59 passed (13+8+10+10+10+8) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -159,3 +159,13 @@ git commit -m "Initial: PHON project skeleton"
 - ⚠️ ТЕХНИЧЕСКИ ДЪЛГ (v0.2): `_serialize` губи ->, .., () заради анонимни литерали
   в `path`, `band`, `phase_match`. v0.2: именувани терминали ARROW/RANGE/LPAREN.
 - ⏳ Следва: Пример 2 - memory.phon (резонатор, capture/read, state)
+
+### 2026-10-29 - Сесия 7a (capture/read на езиково ниво) - завършена
+- ✅ `grammar.lark` - нови capture_stmt, read_stmt
+- ✅ `ast_nodes.py` - CaptureStmt, ReadStmt
+- ✅ `parser.py` - build branches
+- ✅ `semantic.py` - проверки: capture.target/read.source са резонатори
+- ✅ `emitter.py` - JSON serialization
+- ✅ `examples/memory.phon` - първи пример с памет
+- ✅ `tests/test_memory.py` - 8 теста (общо 59)
+- ⏳ Следва: Сесия 7b - симулатор със state (capture/read) + simulation тестове
