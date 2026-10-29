@@ -1,11 +1,11 @@
-"""PHON simulator - idealized wave-physics evaluator."""
+"""PHON simulator - idealized wave-physics evaluator with state."""
 
 from __future__ import annotations
 
 import cmath
 import math
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 __version__ = "0.1.0"
 DEFAULT_AMPLITUDE = 1.0
@@ -23,14 +23,18 @@ class Signal:
     amplitude: float
 
 
+def _snapshot(sig: Signal) -> Signal:
+    return Signal(freq_ghz=sig.freq_ghz, phase_rad=sig.phase_rad, amplitude=sig.amplitude)
+
+
 def parse_phase(text: str) -> float:
     """Parse a PHON phase literal into radians."""
     s = text.strip().lower()
     if s in ("0", "0.0"):
         return 0.0
-    if s in ("pi", "π"):
+    if s in ("pi", "\u03c0"):
         return math.pi
-    if s in ("-pi", "-π"):
+    if s in ("-pi", "-\u03c0"):
         return -math.pi
     if s.endswith("pi"):
         try:
@@ -58,22 +62,24 @@ class Simulator:
     """Evaluates a PHON config dict using idealized wave physics.
 
     Model:
-      - Each band has frequency (GHz), phase (rad), amplitude (default 1.0).
-      - emit assigns a band to a bus.
-      - interfere computes the complex sum of inputs and stores magnitude+phase.
-      - detect compares amplitude against detector threshold -> 0 or 1.
+      - band:   allocates a signal with amplitude 1.0
+      - emit:   bus = band
+      - interfere: bus = complex sum of input buses
+      - capture: resonator = snapshot of source bus
+      - read:   bus = snapshot of source resonator (or zero if empty)
+      - let:    value = detect(bus) OR alias of value/band
+      - return: sets _last_result
     """
 
     def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.bands: Dict[str, Signal] = {}
         self.buses: Dict[str, Signal] = {}
+        self.resonators: Dict[str, Signal] = {}
         self.values: Dict[str, Any] = {}
         self._last_result: Any = None
         self._components = {c["name"]: c for c in config.get("components", [])}
         self._detector_thresholds = self._build_detector_thresholds()
-
-    # ---------- helpers ----------
 
     @staticmethod
     def _parse_bus_list(text: str) -> List[str]:
@@ -111,8 +117,6 @@ class Simulator:
         z = sum(s.amplitude * cmath.exp(1j * s.phase_rad) for s in present)
         return Signal(present[0].freq_ghz, cmath.phase(z), abs(z))
 
-    # ---------- main loop ----------
-
     def run(self, flow_name: str = "main") -> Any:
         flow = next(
             (f for f in self.config.get("flows", []) if f["name"] == flow_name),
@@ -120,7 +124,6 @@ class Simulator:
         )
         if flow is None:
             raise SimulationError(f"No flow named {flow_name!r}")
-
         for stmt in flow["statements"]:
             self._step(stmt)
         return self._last_result
@@ -136,10 +139,20 @@ class Simulator:
         elif t == "emit":
             band = self.bands.get(stmt["expr"])
             if band is None:
-                raise SimulationError(f"emit of unknown band {stmt['expr']!r}")
+                raise SimulationError(f"emit of unknown band: {stmt}")
             self.buses[stmt["target"]] = band
         elif t == "interfere":
             self.buses[stmt["target"]] = self._interfere(stmt["inputs"])
+        elif t == "capture":
+            src = self.buses.get(stmt["source"])
+            if src is not None:
+                self.resonators[stmt["target"]] = _snapshot(src)
+        elif t == "read":
+            stored = self.resonators.get(stmt["source"])
+            if stored is not None:
+                self.buses[stmt["target"]] = _snapshot(stored)
+            else:
+                self.buses[stmt["target"]] = Signal(0.0, 0.0, 0.0)
         elif t == "let":
             expr = stmt["expr"]
             if expr.startswith("detect "):
@@ -159,3 +172,5 @@ class Simulator:
                 self._last_result = self.bands[expr]
             else:
                 self._last_result = expr
+        else:
+            raise SimulationError(f"Unknown statement type: {t!r}")
