@@ -14,7 +14,15 @@ __version__ = "0.3.0"
 
 _GRAMMAR_PATH = Path(__file__).parent / "grammar.lark"
 _GRAMMAR = _GRAMMAR_PATH.read_text(encoding="utf-8")
-_parser = Lark(_GRAMMAR, parser="earley", ambiguity="resolve")
+
+# Try LALR first (10-30x faster than earley). Fall back to earley if the
+# grammar has conflicts that LALR cannot resolve.
+try:
+    _parser = Lark(_GRAMMAR, parser="lalr")
+    _PARSER_MODE = "lalr"
+except Exception:
+    _parser = Lark(_GRAMMAR, parser="earley", ambiguity="resolve")
+    _PARSER_MODE = "earley"
 
 
 class ParseError(Exception):
@@ -218,6 +226,10 @@ def _build_program(program_node) -> Program:
     return prog
 
 
+from functools import lru_cache
+
+
+@lru_cache(maxsize=256)
 def parse(source: str) -> Program:
     try:
         tree = _parser.parse(source)
