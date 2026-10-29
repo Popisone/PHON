@@ -277,3 +277,10 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ **Zenodo DOI:** 10.5281/zenodo.23770120 (добавен като бадж в README).
 - ✅ **GitHub:** https://github.com/Popisone/PHON
 - 🚀 **Утре:** Започваме работа по v0.4 (for loops / GDS export), или каквото решим.
+---
+
+### 🏆 Финални Benchmark резултати (2026-10-29)
+- **Design Space Exploration:** 27,467 симулации/секунда (10,000 симулации за 364 ms).
+- **Parser Scaling (LALR):** 10,000 реда код се парсват за 1.7 секунди (uncached). Earley би отнел часове.
+- **Heavy FDTD vs PHON:** FDTD (1000x1000) отнема 697 ms. PHON (cached) отнема 0.029 ms. 
+- **SPEEDUP:** FDTD е **24,092x** по-бавен от PHON за логическа верификация.
