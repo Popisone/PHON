@@ -8,3 +8,4 @@ __pycache__/
 context-dump.txt
 .vs/
 .vscode/
+dataset_*.csv
