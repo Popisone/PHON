@@ -127,3 +127,12 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ `src/phon/parser.py` — Lark earley парсер + AST builder
 - ✅ `tests/test_parser.py` — 8 теста (общо 21 в проекта)
 - ⏳ Следва: семантичен анализ (Задача #3 - правила 5.4)
+
+### 2026-10-29 - Сесия 3 (парсер) - завършена
+- ✅ `src/phon/grammar.lark` - Lark граматика с COMPONENT_TYPE/UNIT терминали
+- ✅ `src/phon/ast_nodes.py` - AST dataclass-ове
+- ✅ `src/phon/parser.py` - Lark earley + _find_program + _flatten_stmt
+- ✅ `tests/test_parser.py` - 8 теста (общо 21 в проекта)
+- 📚 Урок: Lark изхвърля анонимни string литерали от дървото
+  -> дефинирай ги като именувани терминали (COMPONENT_TYPE, UNIT)
+- ⏳ Следва: семантичен анализ (правила 5.4)
