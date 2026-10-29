@@ -32,7 +32,7 @@ interferometer and_gate {
 detector out_detector {
     at: [40, 15];
     in: [output_bus];
-    threshold: 0.5;
+    threshold: 1.5;
 }
 
 flow main {

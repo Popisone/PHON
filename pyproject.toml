@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phon"
+version = "0.1.0"
+description = "PHON - Phononic Orchestration Notation (open standard + reference implementation)"
+readme = "HANDOFF_v1.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "PHON Project" }]
+dependencies = [
+    "lark>=1.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+phon = ["grammar.lark"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

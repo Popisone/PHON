@@ -1,11 +1,8 @@
-"""PHON - Phononic Orchestration Notation.
-
-A declarative language for describing, compiling, and verifying
-phononic computing circuits.
-"""
+"""PHON - Phononic Orchestration Notation."""
 
 __version__ = "0.1.0"
 
+# Re-exports that do not trigger runtime warnings under python -m phon.*
 from phon.lexer import LexError, Lexer, Token, tokenize
 from phon.ast_nodes import (
     BandStmt, Component, EmitStmt, Flow, InterfereStmt,
