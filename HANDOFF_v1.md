@@ -30,7 +30,7 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 69 passed (13+8+10+10+10+8+10) |
+| Тестове | `tests/` | ✅ 74 passed (13+8+10+10+10+8+10+5) |
 | Примери | `examples/*.phon` | 🟡 and_gate.phon |
 
 ### Стек:
@@ -156,7 +156,8 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ and_gate.phon: threshold 1.5, amp=2.0, AND логика от физика
 - 📚 Урок: here-string `n (LF) vs файлове `r`n (CRLF) -> .Contains() не работи
   -> ползвай regex с (?s) или [regex]::Escape.
-- ⚠️ ТЕХНИЧЕСКИ ДЪЛГ (v0.2): `_serialize` губи ->, .., () заради анонимни литерали
+- ✅ v0.2 FIXED (2026-10-29): `_serialize` запазва ->, .., (), -, ==
+  чрез именувани терминали ARROW, RANGE, LPAREN, RPAREN, MINUS, EQ.
   в `path`, `band`, `phase_match`. v0.2: именувани терминали ARROW/RANGE/LPAREN.
 - ⏳ Следва: Пример 2 - memory.phon (резонатор, capture/read, state)
 
@@ -177,3 +178,13 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ `read` прави snapshot, не препратка (2 независими read-а работят)
 - ✅ Два резонатора пазят независими стойности (m1: 5GHz/0, m2: 7GHz/1)
 - ⏳ Следва: по-сложен пример (напр. 4-битов брояч) или v0.2 grammar fix
+
+### 2026-10-29 - Сесия 8 (v0.2 grammar fix) - завършена
+- ✅ `grammar.lark` - ARROW, RANGE, LPAREN, RPAREN, MINUS, EQ терминали
+- ✅ `parser.py` - `_serialize_list` с tight rules + `_semantic_children`
+- ✅ `_serialize_func_call` - drop parens за simulator compatibility
+- ✅ `tests/test_v02_operators.py` - 5 теста (общо 74)
+- 📚 Урок: Lark изхвърля анонимни string литерали; именувани терминали
+  се запазват. `_semantic_children` изолира IDENT/expr от пунктуация.
+- ⚠️ v0.3 TODO: +, *, /, <, >, !=, <=, >= все още се губят (не се ползват).
+- ⏳ Следва: 4-битов брояч ИЛИ phonomena интеграция ИЛИ publish v0.2
