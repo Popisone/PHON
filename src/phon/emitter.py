@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .ast_nodes import (
+    Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
     IfStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
@@ -20,7 +21,11 @@ def _medium_to_dict(m: Medium) -> Dict[str, Any]:
     return {"name": m.name, "fields": dict(m.fields)}
 
 
-def _component_to_dict(c: Component) -> Dict[str, Any]:
+def _component_to_dict(c: Any) -> Dict[str, Any]:
+    if isinstance(c, Compressor):
+        return {"type": "compressor", "name": c.name, "ratio": c.ratio}
+    if isinstance(c, Channel):
+        return {"type": "channel", "name": c.name, "bandwidth": c.bandwidth}
     return {"type": c.type, "name": c.name, "fields": dict(c.fields)}
 
 
@@ -51,6 +56,10 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
             "then": [_stmt_to_dict(x) for x in s.then_body],
             "else": [_stmt_to_dict(x) for x in s.else_body],
         }
+    if isinstance(s, CompressStmt):
+        return {"type": "compress", "source": s.source, "compressor": s.compressor, "target": s.target}
+    if isinstance(s, TransmitStmt):
+        return {"type": "transmit", "source": s.source, "channel": s.channel, "target": s.target}
     raise TypeError(f"Unknown statement type: {type(s).__name__}")
 
 

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Dict, List
 
 from .ast_nodes import (
+    Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, InterfereStmt,
     LetStmt, Program, ReadStmt, ReturnStmt,
 )
@@ -42,6 +43,8 @@ class SemanticAnalyzer:
         self._check_capture_read_references()
         self._check_band_frequencies()
         self._check_detect_usage()
+        self._check_compression_references()
+        self._check_compression_parameters()
         return self.diagnostics
 
     def errors(self) -> List[Diagnostic]:
@@ -154,7 +157,7 @@ class SemanticAnalyzer:
                     )
 
     def _check_detect_usage(self) -> None:
-        has_detector = any(c.type == "detector" for c in self.program.components)
+        has_detector = any(getattr(c, "type", None) == "detector" for c in self.program.components)
         for flow in self.program.flows:
             for stmt in flow.statements:
                 expr = ""
@@ -166,3 +169,24 @@ class SemanticAnalyzer:
                         f"(flow '{flow.name}')",
                         where=type(stmt).__name__,
                     )
+
+    def _check_compression_references(self) -> None:
+        for flow in self.program.flows:
+            for stmt in flow.statements:
+                if isinstance(stmt, CompressStmt):
+                    if stmt.compressor not in self.components:
+                        self._error(f"undefined compressor '{stmt.compressor}' (flow '{flow.name}')", where="compress")
+                    elif not isinstance(self.components[stmt.compressor], Compressor):
+                        self._error(f"'{stmt.compressor}' is not a compressor (flow '{flow.name}')", where="compress")
+                elif isinstance(stmt, TransmitStmt):
+                    if stmt.channel not in self.components:
+                        self._error(f"undefined channel '{stmt.channel}' (flow '{flow.name}')", where="transmit")
+                    elif not isinstance(self.components[stmt.channel], Channel):
+                        self._error(f"'{stmt.channel}' is not a channel (flow '{flow.name}')", where="transmit")
+
+    def _check_compression_parameters(self) -> None:
+        for c in self.program.components:
+            if isinstance(c, Compressor) and c.ratio <= 0:
+                self._error(f"compressor '{c.name}' ratio must be positive, got {c.ratio}", where="component")
+            if isinstance(c, Channel) and c.bandwidth <= 0:
+                self._error(f"channel '{c.name}' bandwidth must be positive, got {c.bandwidth}", where="component")

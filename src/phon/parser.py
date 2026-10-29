@@ -6,6 +6,7 @@ from pathlib import Path
 from lark import Lark, Token, Tree
 
 from .ast_nodes import (
+    Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt,
     InterfereStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
@@ -82,7 +83,17 @@ def _find_program(tree):
             found = _find_program(child)
             if found is not None:
                 return found
-    return None
+    
+        if node.data == 'compressor':
+            return Compressor(name=node.children[0].value, ratio=float(node.children[1].value))
+        elif node.data == 'channel':
+            return Channel(name=node.children[0].value, bandwidth=float(node.children[1].value))
+        
+        elif node.data == 'compress_stmt':
+            return CompressStmt(source=node.children[0].value, compressor=node.children[1].value, target=node.children[2].value)
+        elif node.data == 'transmit_stmt':
+            return TransmitStmt(source=node.children[0].value, channel=node.children[1].value, target=node.children[2].value)
+        return None
 
 
 def _flatten_stmt(node):
@@ -150,6 +161,10 @@ def _build_stmt(child):
         return ReadStmt(source=sems[0], target=sems[1])
     if rule == "let_stmt":
         return LetStmt(name=sems[0], expr=_serialize(sems[1]))
+    if rule == "compress_stmt":
+        return CompressStmt(source=sems[0], compressor=sems[1], target=sems[2])
+    if rule == "transmit_stmt":
+        return TransmitStmt(source=sems[0], channel=sems[1], target=sems[2])
     if rule == "return_stmt":
         return ReturnStmt(expr=_serialize(sems[0]))
     if rule == "if_stmt":
@@ -223,6 +238,10 @@ def _build_program(program_node) -> Program:
             prog.components.append(_build_component(child))
         elif child.data == "flow_def":
             prog.flows.append(_build_flow(child))
+        elif child.data == "compressor":
+            prog.components.append(Compressor(name=child.children[0].value, ratio=float(child.children[1].value)))
+        elif child.data == "channel":
+            prog.components.append(Channel(name=child.children[0].value, bandwidth=float(child.children[1].value)))
     return prog
 
 

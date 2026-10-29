@@ -1,7 +1,7 @@
 // PHON v0.3 grammar - full operator set + if statement
 start: program
 
-program: (medium_def | component_def | flow_def)*
+program: (medium_def | component_def | flow_def | compressor | channel)*
 
 medium_def: "medium" IDENT "{" field* "}"
 
@@ -19,6 +19,8 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | let_stmt
           | return_stmt
           | if_stmt
+          | compress_stmt
+          | transmit_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
 emit_stmt: "emit" LPAREN expr RPAREN ARROW IDENT ";"
@@ -78,3 +80,8 @@ NUMBER: /[0-9]+(\.[0-9]+)?/
 %ignore WS
 %ignore /\/\/[^\n]*/
 %ignore /\/\*.*?\*\//s
+// --- v0.4: Compression & Transmission ---
+compressor: "compressor" IDENT "{" "ratio:" NUMBER ";" "}"
+channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" "}"
+compress_stmt: "compress" "(" IDENT ")" "at" IDENT "->" IDENT ";"
+transmit_stmt: "transmit" "(" IDENT ")" "via" IDENT "->" IDENT ";"

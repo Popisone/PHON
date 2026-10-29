@@ -210,12 +210,30 @@ class Simulator:
             branch = stmt["then"] if self._eval_condition(cond) else stmt["else"]
             for inner in branch:
                 self._step(inner)
-        elif t == "if":
-            cond = stmt["condition"]
-            # Evaluate condition: "x == 1" or "x != 0" etc.
-            branch = stmt["then"] if self._eval_condition(cond) else stmt["else"]
-            for inner in branch:
-                self._step(inner)
+        elif t == "compress":
+            src_sig = self.buses.get(stmt["source"]) or self.bands.get(stmt["source"])
+            if src_sig is None:
+                raise SimulationError(f"compress of unknown signal: {stmt}")
+            comp = self._components.get(stmt["compressor"])
+            if comp is None:
+                raise SimulationError(f"unknown compressor: {stmt}")
+            ratio = comp.get("ratio", 1.0)
+            # Свиваме честотата (компресия)
+            self.buses[stmt["target"]] = Signal(
+                freq_ghz=src_sig.freq_ghz / ratio,
+                phase_rad=src_sig.phase_rad,
+                amplitude=src_sig.amplitude
+            )
+        elif t == "transmit":
+            src_sig = self.buses.get(stmt["source"])
+            if src_sig is None:
+                raise SimulationError(f"transmit of unknown signal: {stmt}")
+            ch = self._components.get(stmt["channel"])
+            if ch is None:
+                raise SimulationError(f"unknown channel: {stmt}")
+            bw = ch.get("bandwidth", 1.0)
+            # Опростена физика: скорост = лента * 100 Gbps
+            self.values[stmt["target"]] = bw * 100.0
         elif t == "return":
             expr = stmt["expr"]
             if expr in self.values:

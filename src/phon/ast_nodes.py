@@ -79,3 +79,26 @@ class IfStmt:
     condition: str
     then_body: List[Any] = field(default_factory=list)
     else_body: List[Any] = field(default_factory=list)
+
+# --- v0.4: Compression & Transmission Nodes ---
+@dataclass
+class Compressor:
+    name: str
+    ratio: float
+
+@dataclass
+class Channel:
+    name: str
+    bandwidth: float
+
+@dataclass
+class CompressStmt:
+    source: str
+    compressor: str
+    target: str
+
+@dataclass
+class TransmitStmt:
+    source: str
+    channel: str
+    target: str
