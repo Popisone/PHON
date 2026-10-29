@@ -1,0 +1,64 @@
+// PHON Example 3: 4-bit register (four independent memory cells)
+//
+// Demonstrates composition: four resonators, each holding one bit.
+// We write the value 1010 (bit3=1, bit2=0, bit1=1, bit0=0), then read
+// all four bits back. This is not a true "counter" (no conditional
+// increment), but it is the building block from which counters, shift
+// registers, and state machines are composed.
+
+medium silicon_chip {
+    material: Si;
+    temperature: 4K;
+    size: [500um, 500um];
+    dispersion: acoustic_branch;
+    nonlinearity: chi2;
+    damping: 0.005;
+    boundary_conditions: absorbing;
+}
+
+// Write buses (one per bit) - distinct frequency bands to avoid crosstalk
+waveguide w0 { path: [0, 10] -> [50, 10]; width: 200nm; band: 5 GHz .. 6 GHz; }
+waveguide w1 { path: [0, 30] -> [50, 30]; width: 200nm; band: 6 GHz .. 7 GHz; }
+waveguide w2 { path: [0, 50] -> [50, 50]; width: 200nm; band: 7 GHz .. 8 GHz; }
+waveguide w3 { path: [0, 70] -> [50, 70]; width: 200nm; band: 8 GHz .. 9 GHz; }
+
+// Read buses
+waveguide r0 { path: [70, 10] -> [120, 10]; width: 200nm; band: 5 GHz .. 6 GHz; }
+waveguide r1 { path: [70, 30] -> [120, 30]; width: 200nm; band: 6 GHz .. 7 GHz; }
+waveguide r2 { path: [70, 50] -> [120, 50]; width: 200nm; band: 7 GHz .. 8 GHz; }
+waveguide r3 { path: [70, 70] -> [120, 70]; width: 200nm; band: 8 GHz .. 9 GHz; }
+
+// Memory cells (one per bit)
+resonator bit0 { at: [55, 10]; resonance: 5.5 GHz; Q: 10000; couples_to: w0; capacity: 1; }
+resonator bit1 { at: [55, 30]; resonance: 6.5 GHz; Q: 10000; couples_to: w1; capacity: 1; }
+resonator bit2 { at: [55, 50]; resonance: 7.5 GHz; Q: 10000; couples_to: w2; capacity: 1; }
+resonator bit3 { at: [55, 70]; resonance: 8.5 GHz; Q: 10000; couples_to: w3; capacity: 1; }
+
+// Detectors
+detector d0 { at: [130, 10]; in: [r0]; threshold: 0.5; }
+detector d1 { at: [130, 30]; in: [r1]; threshold: 0.5; }
+detector d2 { at: [130, 50]; in: [r2]; threshold: 0.5; }
+detector d3 { at: [130, 70]; in: [r3]; threshold: 0.5; }
+
+flow main {
+    // Write 1010: bit3=1, bit2=0, bit1=1, bit0=0
+    band x3 = 8.5 GHz @ phase 0;
+    band x1 = 6.5 GHz @ phase 0;
+    emit(x3) -> w3;
+    emit(x1) -> w1;
+    capture(w3) -> bit3;
+    capture(w1) -> bit1;
+
+    // Read all four bits back
+    read(bit0) -> r0;
+    read(bit1) -> r1;
+    read(bit2) -> r2;
+    read(bit3) -> r3;
+
+    // Detect each bit (result is the value of bit3 as last_result)
+    let v0 = detect(r0);
+    let v1 = detect(r1);
+    let v2 = detect(r2);
+    let v3 = detect(r3);
+    return v3;
+}
