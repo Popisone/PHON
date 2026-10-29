@@ -30,8 +30,8 @@
 | Парсер | `src/phon/parser.py` | ✅ v0.1 (8 теста) |
 | AST | `src/phon/ast_nodes.py` | ✅ v0.1 |
 | Семантика | `src/phon/semantic.py` | ✅ v0.1 (10 теста) |
-| Тестове | `tests/` | ✅ 111 passed (v0.3 + if + counter) |
-| Примери | `examples/` | ✅ 3 (and_gate, memory, register4) |
+| Тестове | `tests/` | ✅ 117 passed (v0.3 + if + counter + register8) |
+| Примери | `examples/` | ✅ 5 (and_gate, memory, register4, counter4, register8) |
 
 ### Стек:
 - Python 3.10+, `lark`, `pytest`
@@ -251,4 +251,12 @@ git commit -m "Initial: PHON project skeleton"
 - ✅ РЕАЛЕН LLM PIPELINE РАБОТИ: prompt -> PHON -> simulator = 1
 - 📚 Урок: `let` стойности се пазят като string; тестовете да правят int() coercion
 - 📚 Урок: few-shot example в SYSTEM_PROMPT е критичен за малки LLM
+- ⏳ Следва: Publish v0.3 (Zenodo DOI + GitHub release)
+
+### 2026-10-29 - Сесия 14 (8-bit register) - последна задача
+- ✅ `examples/register8.phon` - 8-bit register (1 byte)
+- ✅ Записва 10110101 (0xB5), чете обратно 10110101
+- ✅ `tests/test_register8.py` - 6 теста (общо 117)
+- 📚 Урок: композицията работи - 4-bit register модел се разширява до 8-bit
+  без нови езикови features. Просто повече резонатори/buses/detectors.
 - ⏳ Следва: Publish v0.3 (Zenodo DOI + GitHub release)
