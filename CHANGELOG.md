@@ -2,6 +2,22 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.4] - 2026-10-30
+
+### Added
+- `detect` is now a valid expression: `let x = detect d1;` (no parens needed)
+- `examples/wave_computing.phon`: acoustic matrix multiplication via interference
+- `scripts/wave_computing_demo.py`: generates .wav from PHON interference (Wave Computing PoC)
+- `scripts/local_phon_generator.py`: llama.cpp CPU inference (33-51 tok/s)
+- `examples/detect_test.phon`: minimal test for detect expression
+
+### Fixed
+- `detect` can now be used as an expression (previously only worked as a statement hack)
+- Backward compatible with `detect(x)` syntax — both forms parse correctly
+
+### Changed
+- Grammar: `detect_expr` supports optional parens: `detect x` OR `detect(x)`
+
 ## [0.9.3] - 2026-10-30
 
 ### Changed
