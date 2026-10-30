@@ -7,10 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-30
+
+### Added
+- **For loops**: `for i from 0 to N { ... }`
+- Grammar: `for_stmt` rule
+- AST: `ForStmt` node (variable, start, end, body)
+- Parser: builds `ForStmt` from parse tree
+- Emitter: serializes `ForStmt` to JSON with type `for`
+- Simulator: executes loop body N times, updates loop variable in `values`
+- 4 new tests for for loops (total: 129 tests)
+
+### Changed
+- `simulator._step` now handles `for` statement type
+
 ## [0.4.0] - 2026-10-29
 
 ### Added
-- **Compression and transmission primitives** — first extension of PHON beyond logic gates
+- **Compression and transmission primitives** вЂ” first extension of PHON beyond logic gates
 - New components: `compressor { ratio }` and `channel { bandwidth }`
 - New flow commands: `compress(data) at c1 -> compressed` and `transmit(compressed) via ch1 -> received`
 - Grammar: added rules for `compressor`, `channel`, `compress_stmt`, `transmit_stmt`
