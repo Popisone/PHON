@@ -1,5 +1,7 @@
 import sys
 import numpy as np
+
+np.random.seed(42)  # reproducibility: same model across runs
 from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor
 from skl2onnx import convert_sklearn
@@ -34,7 +36,7 @@ ch = next(c for c in base_cfg["components"] if c["type"] == "channel")
 X, y = [], []
 for _ in range(2000): # 2000 samples са напълно достатъчни за тази линейна физика
     ratio = np.random.uniform(1.0, 10.0)
-    bw = np.random.uniform(0.5, 20.0)
+    bw = np.random.uniform(0.1, 40.0)  # GHz, narrowband (0.1) to mmWave (40)
     comp["ratio"] = ratio
     ch["bandwidth"] = bw
     speed = Simulator(base_cfg).run()
