@@ -21,10 +21,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `simulator._step` now handles `for` statement type
 
+## [0.5.0] - 2026-10-30
+
+### Added
+- **For loops**: `for i from 0 to N { ... }` (grammar, AST, parser, emitter, simulator)
+- **ONNX Runtime API**: `api_onnx.py` (FastAPI + ONNX, no sklearn dependency)
+- 4 new tests for for loops (total: 129 tests)
+
+### Changed
+- `simulator._step` now handles `for` statement type
+- API uses ONNX Runtime for 10x faster inference and lighter deployment
+
 ## [0.4.0] - 2026-10-29
 
 ### Added
-- **Compression and transmission primitives** вЂ” first extension of PHON beyond logic gates
+- **Compression and transmission primitives** РІР‚вЂќ first extension of PHON beyond logic gates
 - New components: `compressor { ratio }` and `channel { bandwidth }`
 - New flow commands: `compress(data) at c1 -> compressed` and `transmit(compressed) via ch1 -> received`
 - Grammar: added rules for `compressor`, `channel`, `compress_stmt`, `transmit_stmt`
