@@ -9,10 +9,7 @@ venv/
 build/
 dist/
 
-# === Training data ===
-*.csv
-
-# === Build artifacts (binaries) ===
+# === Build artifacts ===
 *.exe
 *.dll
 *.so
@@ -21,19 +18,23 @@ dist/
 *.lib
 integration_artifacts/build/
 
-# === OS / Editor ===
-Thumbs.db
-.DS_Store
-.vscode/
-.idea/
+# === Training data ===
+*.csv
+
+# === PRIVATE (patent strategy, models, internal docs) ===
+# Папката private/ не отива в git
+private/
+# Root-ови файлове, преместени в private (не показвай в public repo)
+/HANDOFF_v2.md
+/phon_model.h
+/phon_model.onnx
+# Патентна документация
+/docs/patent/
+# Training data / модели в подпапката integration_artifacts/
+/integration_artifacts/phon_model.h
+/integration_artifacts/phon_model.onnx
 
 # === Backup files ===
 *.bak-*
 *.mangled-bak-*
-
-# === Keep (whitelist) ===
-!phon_model.onnx
-!phon_model.h
-!integration_artifacts/build_artifacts.py
-
 
