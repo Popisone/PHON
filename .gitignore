@@ -38,3 +38,6 @@ private/
 *.bak-*
 *.mangled-bak-*
 
+
+# Release artifacts (Zenodo uploads)
+phon-v*-release.zip
