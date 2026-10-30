@@ -1,0 +1,28 @@
+medium air { temperature: 300K; }
+
+waveguide bus1 {}
+waveguide bus2 {}
+waveguide bus3 {}
+waveguide sum12 {}
+waveguide result_bus {}
+mixer m1 {}
+mixer m2 {}
+
+flow main {
+  // Map frequencies (Hz) to PHON bands
+  band freq1 = 200 @ phase 0;
+  band freq2 = 500 @ phase 0;
+  band freq3 = 900 @ phase 0;
+
+  // Emit the acoustic signals to the buses
+  emit (freq1) -> bus1;
+  emit (freq2) -> bus2;
+  emit (freq3) -> bus3;
+
+  // Physical interference (Acoustic summation)
+  interfere(bus1, bus2) at m1 -> sum12;
+  interfere(sum12, bus3) at m2 -> result_bus;
+
+  // For the demo, return a dummy value indicating success
+  return 1;
+}
