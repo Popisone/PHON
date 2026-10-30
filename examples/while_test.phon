@@ -1,0 +1,10 @@
+﻿medium silicon {
+  temperature: 300K;
+}
+
+flow main {
+  let i = 0;
+  while i < 3 {
+    let i = i + 1;
+  }
+}

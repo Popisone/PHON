@@ -109,3 +109,9 @@ class ForStmt:
     start: str
     end: str
     body: List["FlowStmt"]
+
+
+@dataclass
+class WhileStmt:
+    condition: Any
+    body: List[Any]

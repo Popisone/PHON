@@ -6,6 +6,7 @@ from pathlib import Path
 from lark import Lark, Token, Tree
 
 from .ast_nodes import (
+    WhileStmt,
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt,
@@ -166,6 +167,8 @@ def _build_stmt(child):
         return CompressStmt(source=sems[0], compressor=sems[1], target=sems[2])
     if rule == "transmit_stmt":
         return TransmitStmt(source=sems[0], channel=sems[1], target=sems[2])
+    if rule == "while_stmt":
+        return _build_while(child)
     if rule == "for_stmt":
         # child.children: [IDENT, start_expr, end_expr, body_stmt1, body_stmt2, ...]
         var = str(child.children[0])
@@ -274,3 +277,18 @@ def parse(source: str) -> Program:
 
 def parse_file(path: str) -> Program:
     return parse(Path(path).read_text(encoding="utf-8"))
+
+def _build_while(node) -> WhileStmt:
+    cond_str = ""
+    body_stmts = []
+    for sub in node.children:
+        if not isinstance(sub, Tree):
+            continue
+        if sub.data == "condition":
+            cond_str = _serialize(sub)
+        else:
+            # Това е flow_stmt
+            stmt = _build_stmt(_flatten_stmt(sub))
+            if stmt is not None:
+                body_stmts.append(stmt)
+    return WhileStmt(condition=cond_str, body=body_stmts)
