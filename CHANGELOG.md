@@ -2,6 +2,31 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.3] - 2026-10-30
+
+### Changed
+- `transmit` physics: replaced `100 * compression_ratio * bandwidth` mock
+  with Shannon-inspired model:
+      C = B * log2(1+SNR) * log2(1+compression_ratio) * path_gain
+  where SNR and path_loss come from Channel (new fields: `snr_db=20.0`,
+  `path_loss_db=0.5`).
+
+### Numbers changed
+- V04 demo (bw=2, ratio=4): 800 -> 27.55 Gbps (physics-accurate)
+- Spectral efficiency: 6.66 bits/s/Hz at 20 dB SNR (realistic 64-QAM)
+- Diminishing returns on compression: ratio=10 gives only ~1.5x speedup
+  over ratio=4 (not 2.5x linear)
+
+### Added
+- `Channel` optional fields: `snr_db`, `path_loss_db` (defaults 20.0, 0.5)
+- `build_artifacts.py`: bandwidth range 0.1-40 GHz (was 0.5-20). Covers
+  narrowband IoT (0.1) through mmWave (40).
+
+### Known limitations
+- RF extrapolates poorly for `bw < 1 GHz` (outside training range).
+  Valid range documented: `bw ∈ [1, 40] GHz`.
+- 137 tests still passing.
+
 ## [0.9.2] - 2026-10-30
 
 ### Fixed
