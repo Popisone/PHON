@@ -29,9 +29,11 @@ Thumbs.db
 
 # === Backup files ===
 *.bak-*
+*.mangled-bak-*
 
 # === Keep (whitelist) ===
 !phon_model.onnx
 !phon_model.h
 !integration_artifacts/build_artifacts.py
+
 
