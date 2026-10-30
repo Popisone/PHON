@@ -47,6 +47,12 @@ def _serialize(node) -> str:
     if isinstance(node, Tree):
         if node.data == "func_call":
             return _serialize_func_call(node)
+        if node.data == "detect_expr":
+            # children: [IDENT] or [LPAREN, IDENT, RPAREN]
+            for child in node.children:
+                if getattr(child, "type", None) == "IDENT":
+                    return "detect " + child.value
+            return "detect " + _serialize(node.children[-1])
         return _serialize_list(node.children)
     return str(node)
 

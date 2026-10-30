@@ -51,9 +51,10 @@ path_chain: POINT (ARROW POINT)+
 ?mul_expr: unary_expr ((STAR|SLASH) unary_expr)*
 unary_expr: MINUS unary_expr | postfix_expr
 postfix_expr: atom | atom UNIT
-?atom: NUMBER | IDENT | LPAREN expr RPAREN | func_call | POINT
+?atom: NUMBER | IDENT | LPAREN expr RPAREN | func_call | POINT | detect_expr
 
 func_call: IDENT LPAREN (expr (COMMA expr)*)? RPAREN
+detect_expr: "detect" [LPAREN] IDENT [RPAREN]
 
 COMPONENT_TYPE: "waveguide" | "resonator" | "mixer" | "phase_shifter"
               | "interferometer" | "detector" | "source" | "splitter"

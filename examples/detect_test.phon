@@ -1,0 +1,7 @@
+medium silicon { temperature: 300K; }
+detector d1 { threshold: 1.5; }
+
+flow main {
+  let x = detect d1;
+  return x;
+}
