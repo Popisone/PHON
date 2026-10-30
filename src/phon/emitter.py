@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .ast_nodes import (
+    BreakStmt,
+    ContinueStmt,
     WhileStmt,
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
