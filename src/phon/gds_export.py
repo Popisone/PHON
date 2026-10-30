@@ -15,12 +15,13 @@ from typing import Any, Dict, List, Tuple
 import gdstk
 from phon.ast_nodes import Compressor, Channel
 
-# GDS layer numbers
-LAYER_RESONATOR = 1
-LAYER_WAVEGUIDE = 2
-LAYER_DETECTOR = 3
-LAYER_COMPRESSOR = 4
-LAYER_TEXT = 5
+from phon.pdk import get_layer
+
+LAYER_RESONATOR = get_layer("si").number
+LAYER_WAVEGUIDE = get_layer("si").number
+LAYER_DETECTOR = get_layer("metal").number
+LAYER_COMPRESSOR = get_layer("linbo3").number
+LAYER_TEXT = get_layer("text").number
 
 # Physical constants (simplified for demo)
 WAVEGUIDE_WIDTH_UM = 0.5
