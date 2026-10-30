@@ -1,11 +1,37 @@
-.venv/
+﻿# === Python ===
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*.egg-info/
+*.egg
 .pytest_cache/
-*.bak
-*.bak-*
-context-dump.txt
-.vs/
+.venv/
+venv/
+build/
+dist/
+
+# === Training data ===
+*.csv
+
+# === Build artifacts (binaries) ===
+*.exe
+*.dll
+*.so
+*.o
+*.obj
+*.lib
+integration_artifacts/build/
+
+# === OS / Editor ===
+Thumbs.db
+.DS_Store
 .vscode/
-dataset_*.csv
+.idea/
+
+# === Backup files ===
+*.bak-*
+
+# === Keep (whitelist) ===
+!phon_model.onnx
+!phon_model.h
+!integration_artifacts/build_artifacts.py
+
