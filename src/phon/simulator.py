@@ -151,17 +151,17 @@ class Simulator:
         else:
             a, b = lhs, rhs_num
         if op == "==":
-            return a == b
+            return float(a) == float(b)
         if op == "!=":
-            return a != b
+            return float(a) != float(b)
         if op == "<":
-            return a < b
+            return float(a) < float(b)
         if op == ">":
-            return a > b
+            return float(a) > float(b)
         if op == "<=":
-            return a <= b
+            return float(a) <= float(b)
         if op == ">=":
-            return a >= b
+            return float(a) >= float(b)
         return False
 
     def run(self, flow_name: str = "main") -> Any:
@@ -210,7 +210,11 @@ class Simulator:
             elif expr in self.bands:
                 self.values[stmt["name"]] = self.bands[expr]
             else:
-                self.values[stmt["name"]] = expr
+                try:
+                    val = eval(expr, {"__builtins__": None}, dict(self.values))
+                except Exception:
+                    val = expr
+                self.values[stmt["name"]] = val
         elif t == "if":
             cond = stmt["condition"]
             branch = stmt["then"] if self._eval_condition(cond) else stmt["else"]
@@ -246,8 +250,31 @@ class Simulator:
             end = int(float(stmt["end"]))
             for i in range(start, end):
                 self.values[var] = i
-                for inner in stmt["body"]:
-                    self._step(inner)
+                try:
+                    for inner in stmt["body"]:
+                        self._step(inner)
+                except BreakException:
+                    break
+                except ContinueException:
+                    continue
+        elif t == "while":
+            max_iter = 1_000_000
+            count = 0
+            while self._eval_condition(stmt["condition"]):
+                if count >= max_iter:
+                    raise SimulationError("While loop exceeded max iterations")
+                try:
+                    for inner in stmt["body"]:
+                        self._step(inner)
+                except BreakException:
+                    break
+                except ContinueException:
+                    pass
+                count += 1
+        elif t == "break":
+            raise BreakException()
+        elif t == "continue":
+            raise ContinueException()
         elif t == "return":
             expr = stmt["expr"]
             if expr in self.values:
