@@ -1,194 +1,228 @@
-# PHON (Phononic Orchestration Notation)
+# PHON
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23770120.svg)](https://doi.org/10.5281/zenodo.23770120)
-> A declarative language for describing, compiling, and simulating phononic (acoustic-wave) computing circuits.
+**A Python-like DSL for photonic circuits — design, simulate, verify, export to GDSII.**
 
-**Version:** 0.3 В· **Tests:** 117 passing В· **License:** Apache-2.0 (code) + CC BY-SA 4.0 (spec)
+[![Tests](https://img.shields.io/badge/tests-137%20passing-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-0.9.3-blue)]()
+[![License](https://img.shields.io/badge/license-Apache%202.0%20%2F%20CC%20BY--SA%204.0-green)]()
+
+PHON is an open standard and reference implementation for describing photonic systems at a high level. Write <code>.phon</code> code, simulate physics, export to GDSII.
+
+> **New to photonics?** Start with [Quickstart](#quickstart).
+> **Design PICs already?** Jump to [What is PHON](#what-is-phon).
+> **Train an AI agent?** See [ML surrogate](#ml-surrogate).
+
+---
+
+## Quickstart
+
+~~~bash
+git clone https://github.com/Popisone/PHON
+cd PHON
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate     # Unix
+pip install -e .
+~~~
+
+Write <code>hello.phon</code>:
+
+~~~phon
+medium silicon { temperature: 300K; }
+
+flow main {
+  let a = 10;
+  let b = 5;
+  return a + b;
+}
+~~~
+
+Run it:
+
+~~~python
+from phon.parser import parse
+from phon.emitter import to_config
+from phon.simulator import Simulator
+
+program = parse(open("hello.phon").read())
+config  = to_config(program, validate=True)
+print(Simulator(config).run())   # 15
+~~~
+
+That's it — 30 seconds to a working simulation.
 
 ---
 
 ## What is PHON?
 
-PHON is a domain-specific language for phononic circuits. Where Verilog describes digital logic and CUDA describes GPU kernels, PHON describes **waveguides, resonators, interferometers, and detectors** вЂ” and the flow of acoustic signals between them.
+A <code>.phon</code> file has three parts: **medium**, **components**, and **flow**.
 
-Instead of boolean values and clock cycles, PHON works with **frequencies, phases, and amplitudes**. An "AND gate" is not a truth table вЂ” it is two waves that interfere constructively. A "memory cell" is a resonator that captures and releases a signal.
+~~~phon
+medium silicon { temperature: 300K; }
 
-## Quick example вЂ” an AND gate
+compressor c1 { ratio: 4; }
+channel ch1 { bandwidth: 2 GHz; }
 
-    medium chip { material: Si; }
+flow main {
+  band data = 5 GHz @ phase 0;
+  compress(data) at c1 -> compressed;
+  transmit(compressed) via ch1 -> received;
+  return received;
+}
+~~~
 
-    waveguide input_a { width: 200nm; }
-    waveguide input_b { width: 200nm; }
+The pipeline:
 
-    interferometer and_gate {
-        at: [30, 15];
-        in: [input_a, input_b];
-        out: output_bus;
-        phase_match: (phase_a - phase_b) == 0;
-    }
+~~~
+.phon source
+   │
+   ▼  phon.parser.parse
+AST
+   │
+   ▼  phon.emitter.to_config
+JSON config  ───►  phon.simulator.Simulator  ───►  numbers
+   │
+   ▼  phon.gds_export
+GDSII layout (KLayout / fab-ready)
+~~~
 
-    detector d { at: [40, 15]; in: [output_bus]; threshold: 1.5; }
+**Components** are physical things: <code>waveguide</code>, <code>resonator</code>, <code>interferometer</code>, <code>splitter</code>, <code>detector</code>, <code>compressor</code>, <code>channel</code>.
 
-    flow main {
-        band a = 5 GHz @ phase 0;
-        band b = 5 GHz @ phase 0;
-        emit(a) -> input_a;
-        emit(b) -> input_b;
-        interfere(input_a, input_b) at and_gate -> output_bus;
-        let r = detect(output_bus);
-        return r;
-    }
+**Flow** is code: <code>band</code>, <code>emit</code>, <code>interfere</code>, <code>compress</code>, <code>transmit</code>, <code>if</code>, <code>for</code>, <code>while</code>, <code>let</code>, <code>return</code>.
 
-Run it:
+PHON is **Turing-complete**: <code>examples/register8.phon</code> implements an 8-bit register in pure DSL, no external compute primitives.
 
-    python -m phon.emitter examples/and_gate.phon
+---
 
-Output: JSON config with `phon_version`, `medium`, `components`, `flows`.
+## From DSL to Silicon
 
-## Quick start
+~~~phon
+// examples/and_gate.phon
+interfere(input_a, input_b) at and_gate -> output_bus;
+let r = detect output_bus;
+return r;
+~~~
 
-    git clone <repo> phon
-    cd phon
-    python -m venv .venv
-    .venv\Scripts\Activate.ps1          # Windows
-    # source .venv/bin/activate         # macOS / Linux
-    pip install -e .
+~~~bash
+python -c "from phon.gds_export import export; export('examples/and_gate.phon', 'and_gate.gds')"
+klayout and_gate.gds    # visual verification
+~~~
 
-    # Run all 117 tests
-    pytest tests/ -q
+Same source → simulation **and** layout. No other open-source DSL does both.
 
-    # Simulate an example
-    python -c "from phon.parser import parse_file; from phon.emitter import to_config; from phon.simulator import Simulator; print(Simulator(to_config(parse_file('examples/and_gate.phon'))).run())"
+---
+
+## Physics
+
+<code>transmit</code> uses a Shannon-inspired throughput model:
+
+~~~
+C = B · log2(1 + SNR) · log2(1 + compression_ratio) · path_gain
+~~~
+
+where <code>SNR = 20 dB</code> (default), <code>path_loss = 0.5 dB</code> (default), and <code>path_gain = 10^(-path_loss_dB / 10)</code>.
+
+Example (<code>bandwidth=2 GHz</code>, <code>compression_ratio=4</code>):
+
+~~~
+C = 2 · 6.66 · 2.32 · 0.89 ≈ 27.55 Gbps
+~~~
+
+Which is <code>6.66 bits/s/Hz</code> — exactly what you'd expect from 64-QAM at 20 dB SNR.
+
+**Valid range** (for the ML surrogate, see below):
+
+| Parameter | Range | Default |
+|-----------|-------|---------|
+| <code>bandwidth</code> | 0.1 – 40 GHz | <code>2 GHz</code> |
+| <code>compression_ratio</code> | 1 – 10 | <code>4</code> |
+| <code>snr_db</code> | 10 – 30 | <code>20</code> |
+| <code>path_loss_db</code> | 0 – 5 | <code>0.5</code> |
+
+Outside this range, the ML surrogate extrapolates poorly.
+
+---
+
+## ML surrogate
+
+Train a Random Forest on simulator outputs, export to ONNX for 1600x speedup:
+
+~~~bash
+python integration_artifacts/build_artifacts.py    # generates phon_model.onnx
+python scripts/verify_onnx.py                       # sweeps ratio/bandwidth
+~~~
+
+The ONNX model can be used as:
+
+- **A fast simulator substitute** in optimization loops
+- **A reward signal** for RL training of LLM design agents
+- **A CPU-native verifier** — no GPU, no cloud
+
+---
 
 ## Examples
 
-| File | Demonstrates | Result |
-| :--- | :--- | :--- |
-| `examples/and_gate.phon` | Wave interference в†’ logical AND | `1` |
-| `examples/memory.phon` | Resonator as one memory cell | `1` |
-| `examples/register4.phon` | 4 memory cells в†’ 4-bit register | `1010` |
-| `examples/counter4.phon` | `if` statement в†’ conditional increment | `b0` set |
-| `examples/register8.phon` | 8 cells в†’ one byte (0xB5) | `10110101` |
+| File | Description |
+|------|-------------|
+| <code>examples/while_test.phon</code> | Control flow — <code>while</code> loop |
+| <code>examples/and_gate.phon</code> | Photonic AND gate — interfere + detect |
+| <code>examples/memory.phon</code> | 1-bit memory cell |
+| <code>examples/counter4.phon</code> | 4-bit counter — <code>for</code> + arithmetic |
+| <code>examples/register4.phon</code> | 4-bit register |
+| <code>examples/register8.phon</code> | **8-bit register — flagship demo** |
+| <code>examples/alu_2op.phon</code> | 2-op ALU (ADD/SUB) — <code>if</code>/<code>else</code> + <code>while</code> |
+| <code>examples/*.gds</code> | GDSII layouts — open in KLayout |
 
-## Architecture
+Run all examples:
 
-    src/phon/
-      lexer.py       вЂ” tokenizer
-      grammar.lark   вЂ” EBNF grammar
-      parser.py      вЂ” Lark-based parser в†’ AST
-      ast_nodes.py   вЂ” Program, Medium, Component, Flow, statements
-      semantic.py    вЂ” validator (refs, thresholds, frequencies)
-      emitter.py     вЂ” AST в†’ JSON config
-      simulator.py   вЂ” idealized complex-amplitude evaluator
-      fdtd.py        вЂ” 1D finite-difference time-domain (real physics)
+~~~bash
+python scripts/test_examples.py
+~~~
 
-## LLM + PHON (local, CPU-only)
+---
 
-PHON integrates with local LLMs via Ollama. No GPU needed.
+## Language notes
 
-    ollama pull llama3.2:1b          # ~1.3 GB, runs on CPU
-    pip install ollama
-    python scripts/ask_llm_for_phon.py "an AND gate with two inputs"
+- **Variables are function-scoped, not block-scoped.** <code>let x = ...</code> inside an <code>if</code> overwrites the outer <code>x</code> (Python semantics, not C).
+- **No bitwise operators yet.** <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code> are in roadmap.
+- **UTF-8 only.** BOM will break the parser; use <code>scripts/fix_bom.py</code>.
 
-Pipeline: prompt в†’ LLM в†’ PHON source в†’ parser в†’ semantic check в†’ simulator в†’ result.
+---
 
-If Ollama is not installed, a built-in offline fallback provides two templates (AND gate, memory cell).
+## Status
 
-## Machine learning with PHON (no GPU)
+- Version **0.9.3** (pre-1.0 — expect breaking changes)
+- **137 tests** passing
+- GDSII export via <code>gdstk</code>
+- ML surrogate via <code>scikit-learn</code> + <code>onnxruntime</code>
+- Handoff protocol in <code>HANDOFF*.md</code> files
 
-Generate synthetic datasets for training surrogate models:
+---
 
-    python scripts/generate_phon_dataset.py          # 256 samples in < 1 sec
-    python scripts/train_surrogate.py                # 86.5% (baseline)
-    python scripts/train_surrogate_v2.py             # 100% (with cos(delta) feature)
+## Install (dev)
 
-The lesson: **physics-informed feature engineering beats pure data-driven ML** on small samples.
+~~~bash
+git clone https://github.com/Popisone/PHON
+cd PHON
+python -m venv .venv
+.venv\Scripts\activate           # Windows
+# source .venv/bin/activate      # Unix
+pip install -e .
+python -m pytest tests\ -q       # 137 passed
+~~~
 
-## Roadmap
+**Requirements:** Python 3.10+, <code>lark</code>, <code>numpy</code>, <code>scikit-learn</code>, <code>onnxruntime</code>, <code>gdstk</code>.
 
-- [x] v0.1 вЂ” lexer, parser, simulator, 2 examples
-- [x] v0.2 вЂ” full operator set preserved in JSON (`->`, `..`, `()`, `-`, `==`)
-- [x] v0.3 вЂ” `if` statement, real Ollama LLM pipeline, 5 examples, 117 tests
-- [ ] v0.4 вЂ” `for` loops, function definitions
-- [ ] v0.5 вЂ” GDS export for real chip tape-out
-- [ ] v1.0 вЂ” Zenodo DOI + GitHub release
+---
 
 ## License
 
-- **Code:** Apache License 2.0
+- **Code:** Apache 2.0
 - **Specification:** CC BY-SA 4.0
 
-## Citation
+---
 
-If you use PHON in research, please cite via `CITATION.cff` (coming in v0.3 release).
+## Links
 
-## License
-
-PHON is dual-licensed:
-
-- **Code** (`src/phon/*.py`, `scripts/*.py`, `tests/*.py`) - [Apache License 2.0](LICENSE)
-- **Specification** (grammar, examples, language documentation) - [CC BY-SA 4.0](LICENSE-SPEC.md)
-
-See [LICENSE](LICENSE) and [LICENSE-SPEC.md](LICENSE-SPEC.md) for full terms.
-
-## Citation
-
-If you use PHON in academic work, please cite it. See [CITATION.cff](CITATION.cff).
-
-## 🚀 Performance Benchmarks (v0.8.0)
-
-Measured on 2026-10-30 (Windows 10, Python 3.11, 8-core CPU):
-
-| Metric | Value |
-|---|---|
-| Parse (3,000 lines / 89 KB) | **184 ms** |
-| JSON emit | **2.6 ms** |
-| PHON simulation (`while` loop) | **56,123 iterations/sec** |
-| ONNX inference (surrogate model) | **4,187,605 predictions/sec** |
-| **ONNX speedup vs PHON** | **1,637x** |
-
-### What this means
-
-- **Design Space Exploration:** ML surrogate enables real-time parameter sweeps.
-- **Code Generation:** Full pipeline (parse → JSON → simulate) in < 200 ms for 3,000-line programs.
-- **Turing-complete:** `while`, `break`, `continue`, `if`, `for` – all work end-to-end.
-
-### Reproduce
-
-```bash
-python scripts/benchmark_heavy.py   # volume, speed, accuracy
-python scripts/benchmark_onnx.py    # ML vs PHON speedup
-
-## 🏭 GDSII Export (v0.9.0)
-
-PHON can export to GDSII for physical tape-out:
-
-```python
-from phon.parser import parse_file
-from phon.gds_export import build_gds
-
-prog = parse_file("examples/and_gate.phon")
-build_gds(prog, "and_gate.gds")
-Supported Components
-PHON ComponentGDS ShapeLayer
-resonatorRing (radius from freq)Si (1)
-waveguideRobustPathSi (1)
-detectorRectangle padMetal (4)
-compressor / channelLabeled rectangleLiNbO3 (3)
-PDK Layer Stack
-Si (220 nm) — waveguide core
-
-SiO2 (2000 nm) — cladding
-
-LiNbO3 (600 nm) — electro-optic
-
-Metal (100 nm) — contacts
-
-Text (0 nm) — labels
-
-Visualize with KLayout
-Download free KLayout and open any .gds file.
-
-Reproduce
-bash
-python scripts/generate_gds_demo.py
+- **GitHub:** https://github.com/Popisone/PHON
+- **Changelog:** <code>CHANGELOG.md</code>
