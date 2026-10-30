@@ -1,7 +1,6 @@
 ﻿import pytest
 from phon.parser import parse
 from phon.emitter import to_config
-from phon.simulator import Simulator
 
 SRC = """
 medium silicon { temperature: 300K; }
@@ -20,8 +19,16 @@ def test_break_statement():
     ast = parse(SRC)
     config = to_config(ast)
     flow_stmts = config.get("flows", [{}])[0].get("statements", [])
-    while_stmt = flow_stmts[1]
-    assert while_stmt["type"] == "while"
-    # Проверяваме дали break е в тялото на while
+    
+    # Намираме while statement
+    while_stmt = next(s for s in flow_stmts if s["type"] == "while")
+    
+    # Тялото на while съдържа let и if
     body_types = [s["type"] for s in while_stmt["body"]]
-    assert "break" in body_types
+    assert "let" in body_types
+    assert "if" in body_types
+    
+    # Намираме if statement-а и проверяваме дали break е в неговото then тяло
+    if_stmt = next(s for s in while_stmt["body"] if s["type"] == "if")
+    then_types = [s["type"] for s in if_stmt["then"]]
+    assert "break" in then_types
