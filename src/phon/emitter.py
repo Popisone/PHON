@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .ast_nodes import (
+    ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
     IfStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
@@ -60,6 +61,14 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
         return {"type": "compress", "source": s.source, "compressor": s.compressor, "target": s.target}
     if isinstance(s, TransmitStmt):
         return {"type": "transmit", "source": s.source, "channel": s.channel, "target": s.target}
+    if isinstance(s, ForStmt):
+        return {
+            "type": "for",
+            "variable": s.variable,
+            "start": s.start,
+            "end": s.end,
+            "body": [_stmt_to_dict(x) for x in s.body],
+        }
     raise TypeError(f"Unknown statement type: {type(s).__name__}")
 
 

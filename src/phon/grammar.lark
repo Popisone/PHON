@@ -21,6 +21,7 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | if_stmt
           | compress_stmt
           | transmit_stmt
+          | for_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
 emit_stmt: "emit" LPAREN expr RPAREN ARROW IDENT ";"
@@ -85,3 +86,4 @@ compressor: "compressor" IDENT "{" "ratio:" NUMBER ";" "}"
 channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" "}"
 compress_stmt: "compress" "(" IDENT ")" "at" IDENT "->" IDENT ";"
 transmit_stmt: "transmit" "(" IDENT ")" "via" IDENT "->" IDENT ";"
+for_stmt: "for" IDENT "from" expr "to" expr "{" flow_stmt* "}"

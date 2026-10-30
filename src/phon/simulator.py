@@ -234,6 +234,14 @@ class Simulator:
             bw = ch.get("bandwidth", 1.0)
             # Опростена физика: скорост = лента * 100 Gbps
             self.values[stmt["target"]] = bw * 100.0
+        elif t == "for":
+            var = stmt["variable"]
+            start = int(float(stmt["start"]))
+            end = int(float(stmt["end"]))
+            for i in range(start, end):
+                self.values[var] = i
+                for inner in stmt["body"]:
+                    self._step(inner)
         elif t == "return":
             expr = stmt["expr"]
             if expr in self.values:

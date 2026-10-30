@@ -6,6 +6,7 @@ from pathlib import Path
 from lark import Lark, Token, Tree
 
 from .ast_nodes import (
+    ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt,
     InterfereStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
@@ -165,6 +166,17 @@ def _build_stmt(child):
         return CompressStmt(source=sems[0], compressor=sems[1], target=sems[2])
     if rule == "transmit_stmt":
         return TransmitStmt(source=sems[0], channel=sems[1], target=sems[2])
+    if rule == "for_stmt":
+        # child.children: [IDENT, start_expr, end_expr, body_stmt1, body_stmt2, ...]
+        var = str(child.children[0])
+        start = _serialize(child.children[1])
+        end = _serialize(child.children[2])
+        body = []
+        for c in child.children[3:]:
+            stmt = _build_stmt(c)
+            if stmt is not None:
+                body.append(stmt)
+        return ForStmt(variable=var, start=start, end=end, body=body)
     if rule == "return_stmt":
         return ReturnStmt(expr=_serialize(sems[0]))
     if rule == "if_stmt":

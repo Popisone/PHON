@@ -102,3 +102,10 @@ class TransmitStmt:
     source: str
     channel: str
     target: str
+
+@dataclass
+class ForStmt:
+    variable: str
+    start: str
+    end: str
+    body: List["FlowStmt"]
