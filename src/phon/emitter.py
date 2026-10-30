@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .ast_nodes import (
+    WhileStmt,
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
@@ -61,6 +62,12 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
         return {"type": "compress", "source": s.source, "compressor": s.compressor, "target": s.target}
     if isinstance(s, TransmitStmt):
         return {"type": "transmit", "source": s.source, "channel": s.channel, "target": s.target}
+    if isinstance(s, WhileStmt):
+        return {
+            "type": "while",
+            "condition": s.condition,
+            "body": [_stmt_to_dict(x) for x in s.body],
+        }
     if isinstance(s, ForStmt):
         return {
             "type": "for",
