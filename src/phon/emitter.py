@@ -62,6 +62,10 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
         return {"type": "compress", "source": s.source, "compressor": s.compressor, "target": s.target}
     if isinstance(s, TransmitStmt):
         return {"type": "transmit", "source": s.source, "channel": s.channel, "target": s.target}
+    if isinstance(s, BreakStmt):
+        return {"type": "break"}
+    if isinstance(s, ContinueStmt):
+        return {"type": "continue"}
     if isinstance(s, WhileStmt):
         return {
             "type": "while",

@@ -23,6 +23,8 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | transmit_stmt
           | for_stmt
           | while_stmt
+          | break_stmt
+          | continue_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
 emit_stmt: "emit" LPAREN expr RPAREN ARROW IDENT ";"
@@ -90,3 +92,6 @@ transmit_stmt: "transmit" "(" IDENT ")" "via" IDENT "->" IDENT ";"
 for_stmt: "for" IDENT "from" expr "to" expr "{" flow_stmt* "}"
 
 while_stmt: "while" condition "{" flow_stmt* "}"
+
+break_stmt: "break" ";"
+continue_stmt: "continue" ";"

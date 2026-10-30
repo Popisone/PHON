@@ -6,6 +6,7 @@ from pathlib import Path
 from lark import Lark, Token, Tree
 
 from .ast_nodes import (
+    BreakStmt, ContinueStmt,
     WhileStmt,
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
@@ -167,6 +168,10 @@ def _build_stmt(child):
         return CompressStmt(source=sems[0], compressor=sems[1], target=sems[2])
     if rule == "transmit_stmt":
         return TransmitStmt(source=sems[0], channel=sems[1], target=sems[2])
+    if rule == "break_stmt":
+        return BreakStmt()
+    if rule == "continue_stmt":
+        return ContinueStmt()
     if rule == "while_stmt":
         return _build_while(child)
     if rule == "for_stmt":

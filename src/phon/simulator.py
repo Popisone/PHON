@@ -58,6 +58,12 @@ def parse_freq(text: str) -> float:
         raise SimulationError(f"Cannot parse frequency {text!r}") from e
 
 
+class BreakException(Exception):
+    pass
+
+class ContinueException(Exception):
+    pass
+
 class Simulator:
     """Evaluates a PHON config dict using idealized wave physics.
 

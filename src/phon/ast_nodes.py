@@ -115,3 +115,12 @@ class ForStmt:
 class WhileStmt:
     condition: Any
     body: List[Any]
+
+
+@dataclass
+class BreakStmt:
+    pass
+
+@dataclass
+class ContinueStmt:
+    pass
