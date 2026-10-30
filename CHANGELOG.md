@@ -1,47 +1,41 @@
 ﻿# Changelog
 
-All notable changes to PHON are documented here.
+All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
+
+## [0.9.2] - 2026-10-30
+
+### Fixed
+- `transmit` now uses `Signal.compression_ratio` metadata instead of
+  inferring ratio from `freq_ghz` (assumed original = 5 GHz). Multi-band
+  circuits are now correct: 10 GHz compressed 4x gives 800 Gbps, not 400.
+- `compress` propagates cumulative compression_ratio (multiple compress
+  ops stack multiplicatively).
+
+### Breaking
+- `Simulator.run()` results changed for circuits where original signal
+  freq != 5 GHz. Semantic correction, not regression.
+- V04 demo expected value: 200 -> 800. Tests updated.
+
+### Tests
+- 135 -> 137 passing (+2 regression tests for the compression bug).
+
+### Physics changes
+- `build_artifacts.py`: RF strengthened (10 trees depth 5 -> 200 trees
+  unlimited depth). Predictions now `corr(y,ratio)=0.995`, was `nan`.
+- Output paths fixed: files go to `integration_artifacts/`, not CWD.
 
 ## [0.9.0] - 2026-10-30
 
 ### Added
-- **GDSII export** (`src/phon/gds_export.py` via `gdstk`)
-  - resonator -> ring (radius from frequency)
-  - waveguide -> RobustPath
-  - detector -> rectangle pad
-  - compressor/channel -> labeled rectangles
-- **PDK layer stack** (`src/phon/pdk.py`)
-  - Si (220 nm), SiO2 (2000 nm), LiNbO3 (600 nm), Metal (100 nm), Text
-  - KLayout-compatible colors
-- **GDS demo script** (`scripts/generate_gds_demo.py`)
-  - Auto-generates `examples/*.gds` from PHON sources
+- GDSII export via `gdstk` (resonator -> ring, waveguide -> path, detector -> pad)
+- PDK layer definitions (Si 220nm, SiO2 2000nm, LiNbO3 600nm, Metal 100nm)
+- `scripts/generate_gds_demo.py` + example `.gds` files
 
 ### Tests
-- 135 tests passing (added GDS export test)
+- 135 passing
 
-## [0.8.0] - 2026-10-30
+## [0.8.0] - earlier
 
 ### Added
-- `while` loops (with 1M max_iter safety)
-- `break` and `continue` statements
-- Math evaluation in `let` (`i = i + 1` works)
-- 8-bit ALU example (`examples/alu8.phon`)
-- ONNX vs PHON benchmark (1637x speedup)
-
-### Tests
-- 134 tests passing
-
-## [0.5.0] - 2026-10-29
-- `for` loops, ONNX API, 129 tests
-
-## [0.4.0] - 2026-10-29
-- Compression (`compressor`), transmission (`channel`), ML surrogate
-
-## [0.3.0] - 2026-10-29
-- Full operator set, `if` statements
-
-## [0.2.0] - 2026-10-29
-- Operators preserved in JSON
-
-## [0.1.0] - 2026-10-29
-- Initial lexer, parser, semantic analyzer
+- ML surrogate (Random Forest) exported to ONNX (1637x speedup)
+- `scripts/benchmark_onnx.py`

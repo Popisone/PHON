@@ -21,10 +21,16 @@ class Signal:
     freq_ghz: float
     phase_rad: float
     amplitude: float
+    compression_ratio: float = 1.0  # cumulative compression applied (>= 1.0)
 
 
 def _snapshot(sig: Signal) -> Signal:
-    return Signal(freq_ghz=sig.freq_ghz, phase_rad=sig.phase_rad, amplitude=sig.amplitude)
+    return Signal(
+        freq_ghz=sig.freq_ghz,
+        phase_rad=sig.phase_rad,
+        amplitude=sig.amplitude,
+        compression_ratio=sig.compression_ratio,
+    )
 
 
 def parse_phase(text: str) -> float:
@@ -232,7 +238,8 @@ class Simulator:
             self.buses[stmt["target"]] = Signal(
                 freq_ghz=src_sig.freq_ghz / ratio,
                 phase_rad=src_sig.phase_rad,
-                amplitude=src_sig.amplitude
+                amplitude=src_sig.amplitude,
+                compression_ratio=src_sig.compression_ratio * ratio,
             )
         elif t == "transmit":
             src_sig = self.buses.get(stmt["source"])
@@ -242,8 +249,13 @@ class Simulator:
             if ch is None:
                 raise SimulationError(f"unknown channel: {stmt}")
             bw = ch.get("bandwidth", 1.0)
-            # Опростена физика: скорост = лента * 100 Gbps
-            self.values[stmt["target"]] = bw * 100.0
+            # Effective throughput model (v0.9.2):
+            # The Signal carries its cumulative compression_ratio from all
+            # upstream compress operations. A signal compressed by ratio r
+            # carries r× information density, so effective throughput is:
+            #     speed = 100 * compression_ratio * bandwidth
+            # scaled by 100 for Gbps order-of-magnitude.
+            self.values[stmt["target"]] = 100.0 * src_sig.compression_ratio * bw
         elif t == "for":
             var = stmt["variable"]
             start = int(float(stmt["start"]))

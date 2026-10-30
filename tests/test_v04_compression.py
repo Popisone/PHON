@@ -24,8 +24,9 @@ def test_v04_end_to_end():
     sim = Simulator(cfg)
     result = sim.run()
     
-    # 2 GHz bandwidth * 100 = 200 Gbps
-    assert result == 200.0
+    # v0.9.2: transmit now uses compression_ratio metadata.
+    # 100 * ratio(4) * bandwidth(2) = 800 Gbps
+    assert result == 800.0
 
 def test_v04_semantic_missing_compressor():
     """Semantic analyzer should catch undefined compressor."""
@@ -44,3 +45,43 @@ def test_v04_semantic_negative_ratio():
     analyzer.analyze()
     assert not analyzer.ok()
     assert any("ratio must be positive" in d.message for d in analyzer.errors())
+
+def test_transmit_uses_compression_ratio():
+    """Regression: transmit must use cumulative compression_ratio metadata.
+
+    Before v0.9.2, transmit inferred ratio from freq_ghz assuming original=5GHz.
+    This broke whenever original freq != 5GHz. This test guards the fix.
+    """
+    src = SRC_VALID.replace("band data = 5 GHz", "band data = 10 GHz")
+    prog = parse(src)
+    cfg = to_config(prog, validate=True)
+    result = Simulator(cfg).run()
+    # Old buggy code: freq=10/4=2.5, assumed_orig=5, ratio=5/2.5=2 -> 100*2*2=400
+    # New code: compression_ratio=4 -> 100*4*2=800
+    assert result == 800.0, (
+        f"transmit ignored compression_ratio (got {result}, expected 800.0)"
+    )
+
+
+def test_compression_cumulative():
+    """Two compress ops in series must stack their ratios."""
+    src = """
+medium chip { material: Si; }
+compressor c1 { ratio: 4; }
+compressor c2 { ratio: 2; }
+channel ch1 { bandwidth: 2 GHz; }
+flow main {
+    band data = 5 GHz @ phase 0;
+    compress(data) at c1 -> stage1;
+    compress(stage1) at c2 -> stage2;
+    transmit(stage2) via ch1 -> received;
+    return received;
+}
+"""
+    prog = parse(src)
+    cfg = to_config(prog, validate=True)
+    result = Simulator(cfg).run()
+    # cumulative ratio = 4 * 2 = 8; 100 * 8 * 2 = 1600
+    assert result == 1600.0, (
+        f"compression ratios did not stack (got {result}, expected 1600.0)"
+    )
