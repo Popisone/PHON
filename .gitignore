@@ -41,3 +41,7 @@ private/
 
 # Release artifacts (Zenodo uploads)
 phon-v*-release.zip
+
+# Generated ML/audio artifacts
+*.wav
+*.jsonl
