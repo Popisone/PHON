@@ -102,7 +102,7 @@ The pipeline is:
 PHON can generate labeled training data at **89,631 samples/sec** by running the simulator over a grid of design parameters. A Random Forest or Neural Network trained on this data achieves R^2 = 1.0000 and can be exported to:
 
 - **ONNX** (`phon_model.onnx`) - for C#/C++/Web deployment
-- **C header** (`phon_model.h`) - for microcontrollers (86 bytes)
+- **C header** (`phon_model.h`) - for microcontrollers (~48 KB)
 - **Pickle** (`.pkl`) - for Python reuse
 
 The surrogate provides **~321x speedup** over the simulator at inference.
@@ -180,3 +180,4 @@ The invention is applicable to:
 ## 7. Drawings
 
 See `04_FIGURES.md`.
+
