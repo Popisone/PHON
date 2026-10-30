@@ -158,3 +158,37 @@ Measured on 2026-10-30 (Windows 10, Python 3.11, 8-core CPU):
 ```bash
 python scripts/benchmark_heavy.py   # volume, speed, accuracy
 python scripts/benchmark_onnx.py    # ML vs PHON speedup
+
+## 🏭 GDSII Export (v0.9.0)
+
+PHON can export to GDSII for physical tape-out:
+
+```python
+from phon.parser import parse_file
+from phon.gds_export import build_gds
+
+prog = parse_file("examples/and_gate.phon")
+build_gds(prog, "and_gate.gds")
+Supported Components
+PHON ComponentGDS ShapeLayer
+resonatorRing (radius from freq)Si (1)
+waveguideRobustPathSi (1)
+detectorRectangle padMetal (4)
+compressor / channelLabeled rectangleLiNbO3 (3)
+PDK Layer Stack
+Si (220 nm) — waveguide core
+
+SiO2 (2000 nm) — cladding
+
+LiNbO3 (600 nm) — electro-optic
+
+Metal (100 nm) — contacts
+
+Text (0 nm) — labels
+
+Visualize with KLayout
+Download free KLayout and open any .gds file.
+
+Reproduce
+bash
+python scripts/generate_gds_demo.py

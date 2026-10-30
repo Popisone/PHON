@@ -2,32 +2,34 @@
 
 All notable changes to PHON are documented here.
 
+## [0.9.0] - 2026-10-30
+
+### Added
+- **GDSII export** (`src/phon/gds_export.py` via `gdstk`)
+  - resonator -> ring (radius from frequency)
+  - waveguide -> RobustPath
+  - detector -> rectangle pad
+  - compressor/channel -> labeled rectangles
+- **PDK layer stack** (`src/phon/pdk.py`)
+  - Si (220 nm), SiO2 (2000 nm), LiNbO3 (600 nm), Metal (100 nm), Text
+  - KLayout-compatible colors
+- **GDS demo script** (`scripts/generate_gds_demo.py`)
+  - Auto-generates `examples/*.gds` from PHON sources
+
+### Tests
+- 135 tests passing (added GDS export test)
+
 ## [0.8.0] - 2026-10-30
 
 ### Added
-- **`while` loops** with `max_iter = 1_000_000` safety limit
-- **`break` and `continue`** statements (full control flow)
-- **Math evaluation in `let`** (e.g., `let i = i + 1` now evaluates)
-- **8-bit ALU example** (`examples/alu8.phon`) using if + while
-- **ONNX vs PHON benchmark** proving 1,637x speedup
-
-### Fixed
-- `WhileStmt` serialization in `emitter.py`
-- `while`/`break`/`continue` execution in JSON path (`_step`)
-- Import of `BreakStmt`/`ContinueStmt` in `emitter.py`
-
-### Security
-- Moved patent documentation and trained models to `private/` (gitignored)
-- Cleaned public repo of sensitive files (novelty preservation)
-
-### Performance (measured 2026-10-30)
-- Parse: 3,000-line file → 184 ms
-- JSON emit: → 2.6 ms
-- PHON simulation: 56,123 iterations/sec
-- ONNX inference: 4,187,605 predictions/sec (1,637x faster than PHON)
+- `while` loops (with 1M max_iter safety)
+- `break` and `continue` statements
+- Math evaluation in `let` (`i = i + 1` works)
+- 8-bit ALU example (`examples/alu8.phon`)
+- ONNX vs PHON benchmark (1637x speedup)
 
 ### Tests
-- 134 tests passing (up from 129 in v0.5.0)
+- 134 tests passing
 
 ## [0.5.0] - 2026-10-29
 - `for` loops, ONNX API, 129 tests
