@@ -249,13 +249,19 @@ class Simulator:
             if ch is None:
                 raise SimulationError(f"unknown channel: {stmt}")
             bw = ch.get("bandwidth", 1.0)
-            # Effective throughput model (v0.9.2):
-            # The Signal carries its cumulative compression_ratio from all
-            # upstream compress operations. A signal compressed by ratio r
-            # carries r× information density, so effective throughput is:
-            #     speed = 100 * compression_ratio * bandwidth
-            # scaled by 100 for Gbps order-of-magnitude.
-            self.values[stmt["target"]] = 100.0 * src_sig.compression_ratio * bw
+            snr_db = ch.get("snr_db", 20.0)
+            path_loss_db = ch.get("path_loss_db", 0.5)
+            # Shannon-inspired effective throughput (v0.9.3):
+            #     C = B * log2(1 + SNR_linear) * log2(1 + compression_ratio) * path_gain
+            # Spectral efficiency: log2(1+SNR) bits/s/Hz (Shannon-Hartley)
+            # Compression gain: log2(1+r) — diminishing returns, r=4 -> ~2.32x
+            # Path gain: 10^(-path_loss_db/10) — linear attenuation
+            snr_linear = 10.0 ** (snr_db / 10.0)
+            path_gain = 10.0 ** (-path_loss_db / 10.0)
+            spectral_efficiency = math.log2(1.0 + snr_linear)
+            compression_gain = math.log2(1.0 + src_sig.compression_ratio)
+            speed_gbps = bw * spectral_efficiency * compression_gain * path_gain
+            self.values[stmt["target"]] = speed_gbps
         elif t == "for":
             var = stmt["variable"]
             start = int(float(stmt["start"]))

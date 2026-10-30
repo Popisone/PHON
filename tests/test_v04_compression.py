@@ -24,9 +24,9 @@ def test_v04_end_to_end():
     sim = Simulator(cfg)
     result = sim.run()
     
-    # v0.9.2: transmit now uses compression_ratio metadata.
-    # 100 * ratio(4) * bandwidth(2) = 800 Gbps
-    assert result == 800.0
+    # v0.9.3: Shannon physics.
+    # 2 * log2(1+100) * log2(1+4) * 10^(-0.5/10) ≈ 27.51 Gbps
+    assert abs(result - 27.51) < 0.1, f"expected ~27.51 Gbps, got {result}"
 
 def test_v04_semantic_missing_compressor():
     """Semantic analyzer should catch undefined compressor."""
@@ -58,8 +58,10 @@ def test_transmit_uses_compression_ratio():
     result = Simulator(cfg).run()
     # Old buggy code: freq=10/4=2.5, assumed_orig=5, ratio=5/2.5=2 -> 100*2*2=400
     # New code: compression_ratio=4 -> 100*4*2=800
-    assert result == 800.0, (
-        f"transmit ignored compression_ratio (got {result}, expected 800.0)"
+    # Same expected value as band=5 (compression_ratio is cumulative,
+    # independent of original freq). Old buggy code gave 400 here.
+    assert abs(result - 27.51) < 0.1, (
+        f"transmit ignored compression_ratio (got {result}, expected ~27.51)"
     )
 
 
@@ -82,6 +84,7 @@ flow main {
     cfg = to_config(prog, validate=True)
     result = Simulator(cfg).run()
     # cumulative ratio = 4 * 2 = 8; 100 * 8 * 2 = 1600
-    assert result == 1600.0, (
-        f"compression ratios did not stack (got {result}, expected 1600.0)"
+    # cumulative ratio=8: 2 * log2(101) * log2(9) * 10^(-0.05) ≈ 37.64 Gbps
+    assert abs(result - 37.64) < 0.1, (
+        f"compression ratios did not stack (got {result}, expected ~37.64)"
     )

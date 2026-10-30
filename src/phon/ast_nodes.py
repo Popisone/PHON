@@ -90,6 +90,8 @@ class Compressor:
 class Channel:
     name: str
     bandwidth: float
+    path_loss_db: float = 0.5   # attenuation over the link, dB
+    snr_db: float = 20.0        # reference SNR at receiver, dB
 
 @dataclass
 class CompressStmt:
