@@ -254,13 +254,19 @@ class Simulator:
             modulation_order = ch.get("modulation_order", 16)
             fec_enabled = ch.get("fec_enabled", True)
             fec_rate = ch.get("fec_rate", 0.06)
-            # Realistic link budget (v0.9.5):
+            # Realistic link budget (v0.9.8):
+            #   source_atten = 20*log10(amplitude)   # amplitude 1.0 -> 0 dB
+            #   effective_snr = snr_db + source_atten  # lower amp = lower SNR
             #   raw_capacity = B * min(log2(1+SNR), log2(modulation_order))
             #   fec_factor   = (1 - fec_rate) if fec_enabled
             #   path_gain    = 10^(-path_loss_db/10)
             #   comp_gain    = log2(1 + compression_ratio)
             #   speed_gbps   = raw_capacity * fec_factor * path_gain * comp_gain
-            snr_linear = 10.0 ** (snr_db / 10.0)
+            # Note: amplitude is NOT multiplied separately — its effect
+            # is captured through effective_snr_db.
+            source_atten_db = 20.0 * math.log10(max(src_sig.amplitude, 1e-12))
+            effective_snr_db = snr_db + source_atten_db
+            snr_linear = 10.0 ** (effective_snr_db / 10.0)
             spectral_eff = math.log2(1.0 + snr_linear)
             if modulation_order > 0:
                 mod_eff = math.log2(modulation_order)
