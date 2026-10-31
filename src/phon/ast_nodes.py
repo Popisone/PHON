@@ -108,6 +108,15 @@ class TransmitStmt:
     channel: str
     target: str
 
+
+@dataclass
+class StoreStmt:
+    source: str
+    memory: str
+    duration_ms: float
+    target: str
+
+
 @dataclass
 class ForStmt:
     variable: str

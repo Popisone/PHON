@@ -2,6 +2,23 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.6] - 2026-10-31
+
+### Added
+- **Optical memory** (`store` operator + `memory_cell` component)
+  - `memory_cell m1 { retention_ms: 10; }` — defines a retention cell
+  - `store(input) in m1 for 5ms -> output;` — holds signal for duration
+  - Physics: exponential decay `amplitude *= exp(-duration_ms / retention_ms)`
+  - `examples/memory_optical.phon`: 5ms in 10ms cell -> 0.6065x amplitude
+
+### Physics
+- retention_ms=10, duration=5ms: amp_loss = exp(-0.5) = 60.65% of original
+- Phase, frequency, and compression_ratio preserved through memory
+- Memory cells can be chained: store -> transmit -> store
+
+### Tests
+- 137 still passing (no breaking changes)
+
 ## [0.9.5] - 2026-10-31
 
 ### Changed (BREAKING)

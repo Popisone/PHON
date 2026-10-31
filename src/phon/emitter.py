@@ -13,7 +13,7 @@ from .ast_nodes import (
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
-    IfStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
+    IfStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt, StoreStmt,
 )
 from .semantic import SemanticAnalyzer
 
@@ -73,6 +73,9 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
         return {"type": "compress", "source": s.source, "compressor": s.compressor, "target": s.target}
     if isinstance(s, TransmitStmt):
         return {"type": "transmit", "source": s.source, "channel": s.channel, "target": s.target}
+    if isinstance(s, StoreStmt):
+        return {"type": "store", "source": s.source, "memory": s.memory,
+                "duration_ms": s.duration_ms, "target": s.target}
     if isinstance(s, BreakStmt):
         return {"type": "break"}
     if isinstance(s, ContinueStmt):

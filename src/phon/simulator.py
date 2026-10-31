@@ -303,6 +303,26 @@ class Simulator:
             raise BreakException()
         elif t == "continue":
             raise ContinueException()
+        elif t == "store":
+            src_sig = self.buses.get(stmt["source"])
+            if src_sig is None:
+                raise SimulationError(f"store of unknown signal: {stmt}")
+            mem = self._components.get(stmt["memory"])
+            if mem is None:
+                raise SimulationError(f"unknown memory: {stmt}")
+            fields = mem.get("fields", {})
+            retention_ms = float(fields.get("retention_ms", 10.0))
+            if retention_ms <= 0:
+                raise SimulationError(f"memory {stmt['memory']!r} retention_ms must be positive")
+            duration_ms = float(stmt["duration_ms"])
+            # Exponential decay: amplitude *= exp(-t / retention)
+            loss_factor = math.exp(-duration_ms / retention_ms)
+            self.buses[stmt["target"]] = Signal(
+                freq_ghz=src_sig.freq_ghz,
+                phase_rad=src_sig.phase_rad,
+                amplitude=src_sig.amplitude * loss_factor,
+                compression_ratio=src_sig.compression_ratio,
+            )
         elif t == "return":
             expr = stmt["expr"]
             if expr in self.values:

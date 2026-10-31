@@ -21,6 +21,7 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | if_stmt
           | compress_stmt
           | transmit_stmt
+          | store_stmt
           | for_stmt
           | while_stmt
           | break_stmt
@@ -58,6 +59,7 @@ detect_expr: "detect" [LPAREN] IDENT [RPAREN]
 
 COMPONENT_TYPE: "waveguide" | "resonator" | "mixer" | "phase_shifter"
               | "interferometer" | "detector" | "source" | "splitter"
+              | "memory_cell"
 
 UNIT: "nm" | "um" | "mm" | "GHz" | "THz" | "K" | "m/s" | "J" | "W"
 
@@ -90,6 +92,7 @@ compressor: "compressor" IDENT "{" "ratio:" NUMBER ";" "}"
 channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" "}"
 compress_stmt: "compress" "(" IDENT ")" "at" IDENT "->" IDENT ";"
 transmit_stmt: "transmit" "(" IDENT ")" "via" IDENT "->" IDENT ";"
+store_stmt: "store" "(" IDENT ")" "in" IDENT "for" NUMBER "ms" "->" IDENT ";"
 for_stmt: "for" IDENT "from" expr "to" expr "{" flow_stmt* "}"
 
 while_stmt: "while" condition "{" flow_stmt* "}"

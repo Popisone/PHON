@@ -1,0 +1,14 @@
+medium silicon { temperature: 300K; }
+
+memory_cell m1 { retention_ms: 10; }
+waveguide input_bus {}
+waveguide delayed_bus {}
+waveguide transmitted_bus {}
+
+flow main {
+  band data = 5 GHz @ phase 0;
+  emit(data) -> input_bus;
+  store(input_bus) in m1 for 5ms -> delayed_bus;
+  let amp = 1;
+  return amp;
+}

@@ -10,7 +10,7 @@ from .ast_nodes import (
     WhileStmt,
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
-    BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt,
+    BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt, StoreStmt,
     InterfereStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
 
@@ -174,6 +174,16 @@ def _build_stmt(child):
         return CompressStmt(source=sems[0], compressor=sems[1], target=sems[2])
     if rule == "transmit_stmt":
         return TransmitStmt(source=sems[0], channel=sems[1], target=sems[2])
+    if rule == "store_stmt":
+        # children: store, (, IDENT, ), in, IDENT, for, NUMBER, ms, ->, IDENT, ;
+        idents = [c for c in child.children if hasattr(c, "type") and c.type == "IDENT"]
+        numbers = [c for c in child.children if hasattr(c, "type") and c.type == "NUMBER"]
+        return StoreStmt(
+            source=str(idents[0]),
+            memory=str(idents[1]),
+            duration_ms=float(numbers[0]),
+            target=str(idents[2]),
+        )
     if rule == "break_stmt":
         return BreakStmt()
     if rule == "continue_stmt":
