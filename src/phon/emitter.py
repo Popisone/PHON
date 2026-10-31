@@ -29,7 +29,16 @@ def _component_to_dict(c: Any) -> Dict[str, Any]:
     if isinstance(c, Compressor):
         return {"type": "compressor", "name": c.name, "ratio": c.ratio}
     if isinstance(c, Channel):
-        return {"type": "channel", "name": c.name, "bandwidth": c.bandwidth}
+        return {
+            "type": "channel",
+            "name": c.name,
+            "bandwidth": c.bandwidth,
+            "snr_db": c.snr_db,
+            "path_loss_db": c.path_loss_db,
+            "modulation_order": c.modulation_order,
+            "fec_enabled": c.fec_enabled,
+            "fec_rate": c.fec_rate,
+        }
     return {"type": c.type, "name": c.name, "fields": dict(c.fields)}
 
 

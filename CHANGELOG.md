@@ -2,6 +2,26 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.5] - 2026-10-31
+
+### Changed (BREAKING)
+- `transmit` physics: realistic link budget with 16-QAM + FEC
+  - Before (v0.9.3): `speed = B · log2(1+SNR) · comp · path` (Shannon ideal, unreachable)
+  - After (v0.9.5): `speed = B · min(log2(1+SNR), log2(modulation_order)) · (1-fec_rate) · comp · path`
+- V04 demo (bw=2, ratio=4): 27.55 -> 15.56 Gbps (realistic 16-QAM with 6% FEC)
+
+### Added
+- `Channel` new fields:
+  - `modulation_order: int = 16` (4=QPSK, 16=16-QAM, 64=64-QAM, 0=no limit)
+  - `fec_enabled: bool = True` (Forward Error Correction)
+  - `fec_rate: float = 0.06` (6% overhead, standard Reed-Solomon)
+- 3 new tests verifying FEC + modulation behavior
+
+### Notes
+- The old formula was the Shannon limit, which no real system achieves.
+- New formula shows what's actually achievable with off-the-shelf optics.
+- Set `modulation_order: 0` for pure Shannon (ideal) capacity.
+
 ## [0.9.4] - 2026-10-30
 
 ### Added

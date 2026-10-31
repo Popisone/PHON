@@ -251,16 +251,26 @@ class Simulator:
             bw = ch.get("bandwidth", 1.0)
             snr_db = ch.get("snr_db", 20.0)
             path_loss_db = ch.get("path_loss_db", 0.5)
-            # Shannon-inspired effective throughput (v0.9.3):
-            #     C = B * log2(1 + SNR_linear) * log2(1 + compression_ratio) * path_gain
-            # Spectral efficiency: log2(1+SNR) bits/s/Hz (Shannon-Hartley)
-            # Compression gain: log2(1+r) — diminishing returns, r=4 -> ~2.32x
-            # Path gain: 10^(-path_loss_db/10) — linear attenuation
+            modulation_order = ch.get("modulation_order", 16)
+            fec_enabled = ch.get("fec_enabled", True)
+            fec_rate = ch.get("fec_rate", 0.06)
+            # Realistic link budget (v0.9.5):
+            #   raw_capacity = B * min(log2(1+SNR), log2(modulation_order))
+            #   fec_factor   = (1 - fec_rate) if fec_enabled
+            #   path_gain    = 10^(-path_loss_db/10)
+            #   comp_gain    = log2(1 + compression_ratio)
+            #   speed_gbps   = raw_capacity * fec_factor * path_gain * comp_gain
             snr_linear = 10.0 ** (snr_db / 10.0)
+            spectral_eff = math.log2(1.0 + snr_linear)
+            if modulation_order > 0:
+                mod_eff = math.log2(modulation_order)
+                effective_eff = min(spectral_eff, mod_eff)
+            else:
+                effective_eff = spectral_eff  # 0 = no modulation ceiling (Shannon limit)
             path_gain = 10.0 ** (-path_loss_db / 10.0)
-            spectral_efficiency = math.log2(1.0 + snr_linear)
             compression_gain = math.log2(1.0 + src_sig.compression_ratio)
-            speed_gbps = bw * spectral_efficiency * compression_gain * path_gain
+            fec_factor = (1.0 - fec_rate) if fec_enabled else 1.0
+            speed_gbps = bw * effective_eff * path_gain * compression_gain * fec_factor
             self.values[stmt["target"]] = speed_gbps
         elif t == "for":
             var = stmt["variable"]

@@ -92,6 +92,9 @@ class Channel:
     bandwidth: float
     path_loss_db: float = 0.5   # attenuation over the link, dB
     snr_db: float = 20.0        # reference SNR at receiver, dB
+    modulation_order: int = 16  # 4=QPSK, 16=16-QAM, 64=64-QAM, 0=no limit
+    fec_enabled: bool = True    # Forward Error Correction (Reed-Solomon)
+    fec_rate: float = 0.06      # 6% FEC overhead (standard for optical)
 
 @dataclass
 class CompressStmt:
