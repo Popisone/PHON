@@ -22,6 +22,7 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | compress_stmt
           | transmit_stmt
           | store_stmt
+          | wdm_stmt
           | for_stmt
           | while_stmt
           | break_stmt
@@ -94,6 +95,7 @@ channel_field: IDENT ":" value ";"
 compress_stmt: "compress" "(" IDENT ")" "at" IDENT "->" IDENT ";"
 transmit_stmt: "transmit" "(" IDENT ")" "via" IDENT "->" IDENT ";"
 store_stmt: "store" "(" IDENT ")" "in" IDENT "for" NUMBER "ms" "->" IDENT ";"
+wdm_stmt: "wdm" "(" IDENT ")" "into" NUMBER "channels" "->" IDENT ";"
 for_stmt: "for" IDENT "from" expr "to" expr "{" flow_stmt* "}"
 
 while_stmt: "while" condition "{" flow_stmt* "}"

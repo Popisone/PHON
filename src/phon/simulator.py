@@ -22,6 +22,7 @@ class Signal:
     phase_rad: float
     amplitude: float
     compression_ratio: float = 1.0  # cumulative compression applied (>= 1.0)
+    wdm_channels: int = 1           # WDM multiplexing factor (1 = single wavelength)
 
 
 def _snapshot(sig: Signal) -> Signal:
@@ -30,6 +31,7 @@ def _snapshot(sig: Signal) -> Signal:
         phase_rad=sig.phase_rad,
         amplitude=sig.amplitude,
         compression_ratio=sig.compression_ratio,
+        wdm_channels=sig.wdm_channels,
     )
 
 
@@ -240,6 +242,7 @@ class Simulator:
                 phase_rad=src_sig.phase_rad,
                 amplitude=src_sig.amplitude,
                 compression_ratio=src_sig.compression_ratio * ratio,
+                wdm_channels=src_sig.wdm_channels,
             )
         elif t == "transmit":
             src_sig = self.buses.get(stmt["source"])
@@ -277,6 +280,7 @@ class Simulator:
             compression_gain = math.log2(1.0 + src_sig.compression_ratio)
             fec_factor = (1.0 - fec_rate) if fec_enabled else 1.0
             speed_gbps = bw * effective_eff * path_gain * compression_gain * fec_factor
+            speed_gbps *= src_sig.wdm_channels  # WDM: N parallel wavelengths
             self.values[stmt["target"]] = speed_gbps
         elif t == "for":
             var = stmt["variable"]
@@ -328,6 +332,23 @@ class Simulator:
                 phase_rad=src_sig.phase_rad,
                 amplitude=src_sig.amplitude * loss_factor,
                 compression_ratio=src_sig.compression_ratio,
+            )
+        elif t == "wdm":
+            src_sig = self.buses.get(stmt["source"])
+            if src_sig is None:
+                raise SimulationError(f"wdm of unknown signal: {stmt}")
+            n = int(stmt["num_channels"])
+            if n < 1:
+                raise SimulationError(f"wdm num_channels must be >= 1, got {n}")
+            # WDM: split into N parallel wavelengths over the same fiber.
+            # Each wavelength carries 1/N of the signal, but they all travel
+            # in parallel. Net effect: wdm_channels multiplies throughput.
+            self.buses[stmt["target"]] = Signal(
+                freq_ghz=src_sig.freq_ghz,
+                phase_rad=src_sig.phase_rad,
+                amplitude=src_sig.amplitude,
+                compression_ratio=src_sig.compression_ratio,
+                wdm_channels=src_sig.wdm_channels * n,
             )
         elif t == "return":
             expr = stmt["expr"]

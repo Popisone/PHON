@@ -10,7 +10,7 @@ from .ast_nodes import (
     WhileStmt,
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
-    BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt, StoreStmt,
+    BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt, StoreStmt, WdmStmt,
     InterfereStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
 )
 
@@ -183,6 +183,15 @@ def _build_stmt(child):
             memory=str(idents[1]),
             duration_ms=float(numbers[0]),
             target=str(idents[2]),
+        )
+    if rule == "wdm_stmt":
+        # children: wdm, (, IDENT, ), into, NUMBER, channels, ->, IDENT, ;
+        idents = [c for c in child.children if hasattr(c, "type") and c.type == "IDENT"]
+        numbers = [c for c in child.children if hasattr(c, "type") and c.type == "NUMBER"]
+        return WdmStmt(
+            source=str(idents[0]),
+            num_channels=int(float(numbers[0])),
+            target=str(idents[1]),
         )
     if rule == "break_stmt":
         return BreakStmt()

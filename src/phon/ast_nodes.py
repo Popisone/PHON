@@ -138,3 +138,10 @@ class BreakStmt:
 @dataclass
 class ContinueStmt:
     pass
+
+
+@dataclass
+class WdmStmt:
+    source: str
+    num_channels: int
+    target: str
