@@ -2,6 +2,49 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.9] - 2026-10-31
+
+### Added
+- **WDM (Wavelength Division Multiplexing)** — `wdm` operator + `Signal.wdm_channels`
+  - `wdm(input) into 64 channels -> parallel;` — split into N parallel wavelengths
+  - `transmit(parallel) via fiber -> received;` — throughput xN
+  - Physical basis: real DWDM has 80-160 channels, 1-4 Tbps total
+
+### Physics (verified linear speedup)
+- 1 channel: 29.87 Gbps
+- 4 channels: 119.47 Gbps (4.0x)
+- 16 channels: 477.87 Gbps (16.0x)
+- 64 channels: 1911.47 Gbps (64.0x) -> 1.9 Tbps
+- 256 channels: 7645.89 Gbps (256.0x) -> 7.6 Tbps
+
+### Tests
+- 137 passing
+
+## [0.9.8] - 2026-10-31
+
+### Fixed
+- `transmit` now reads `src_sig.amplitude` and adjusts effective SNR:
+  - `source_atten_db = 20*log10(amplitude)` (amplitude 1.0 -> 0 dB)
+  - `effective_snr_db = snr_db + source_atten_db`
+  - Store duration correctly degrades link now
+  - Verified: 1ms->69 Gbps, 20ms->48 Gbps, 30ms->14 Gbps, 50ms->0.4 Gbps
+
+### Tests
+- 137 passing
+
+## [0.9.7] - 2026-10-31
+
+### Added
+- `examples/full_optical_link.phon`: emit -> compress -> store -> transmit
+- `channel` grammar accepts optional fields (`snr_db`, `path_loss_db`, etc.)
+- `parser.py`: channel fields parsed into Channel dataclass
+
+### Physics
+- Output: 69.35 Gbps (before amplitude-aware transmit in v0.9.8)
+
+### Tests
+- 137 passing
+
 ## [0.9.6] - 2026-10-31
 
 ### Added
