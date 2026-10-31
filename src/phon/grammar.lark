@@ -89,7 +89,8 @@ NUMBER: /[0-9]+(\.[0-9]+)?/
 %ignore /\/\*.*?\*\//s
 // --- v0.4: Compression & Transmission ---
 compressor: "compressor" IDENT "{" "ratio:" NUMBER ";" "}"
-channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" "}"
+channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" channel_field* "}"
+channel_field: IDENT ":" value ";"
 compress_stmt: "compress" "(" IDENT ")" "at" IDENT "->" IDENT ";"
 transmit_stmt: "transmit" "(" IDENT ")" "via" IDENT "->" IDENT ";"
 store_stmt: "store" "(" IDENT ")" "in" IDENT "for" NUMBER "ms" "->" IDENT ";"

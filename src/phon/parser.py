@@ -277,7 +277,26 @@ def _build_program(program_node) -> Program:
         elif child.data == "compressor":
             prog.components.append(Compressor(name=child.children[0].value, ratio=float(child.children[1].value)))
         elif child.data == "channel":
-            prog.components.append(Channel(name=child.children[0].value, bandwidth=float(child.children[1].value)))
+            name = child.children[0].value
+            bandwidth = float(child.children[1].value)
+            fields = {}
+            for sub in child.children[2:]:
+                if isinstance(sub, Tree) and sub.data == "channel_field":
+                    key = str(sub.children[0])
+                    val = _serialize(sub.children[1])
+                    fields[key] = val
+            kwargs = {"name": name, "bandwidth": bandwidth}
+            if "snr_db" in fields:
+                kwargs["snr_db"] = float(fields["snr_db"])
+            if "path_loss_db" in fields:
+                kwargs["path_loss_db"] = float(fields["path_loss_db"])
+            if "modulation_order" in fields:
+                kwargs["modulation_order"] = int(float(fields["modulation_order"]))
+            if "fec_enabled" in fields:
+                kwargs["fec_enabled"] = fields["fec_enabled"].lower() in ("true", "1", "yes")
+            if "fec_rate" in fields:
+                kwargs["fec_rate"] = float(fields["fec_rate"])
+            prog.components.append(Channel(**kwargs))
     return prog
 
 

@@ -1,0 +1,18 @@
+medium silicon { temperature: 300K; }
+
+compressor c1 { ratio: 4; }
+memory_cell m1 { retention_ms: 10; }
+channel fiber_ch { bandwidth: 10 GHz; snr_db: 25; path_loss_db: 1.0; }
+
+waveguide tx_bus {}
+waveguide compressed_bus {}
+waveguide delayed_bus {}
+
+flow main {
+  band data = 5 GHz @ phase 0;
+  emit(data) -> tx_bus;
+  compress(tx_bus) at c1 -> compressed_bus;
+  store(compressed_bus) in m1 for 3ms -> delayed_bus;
+  transmit(delayed_bus) via fiber_ch -> received;
+  return received;
+}
