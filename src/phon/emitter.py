@@ -14,6 +14,7 @@ from .ast_nodes import (
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, InterfereStmt,
     IfStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt, StoreStmt, WdmStmt,
+    Layer, PropagateStmt,
 )
 from .semantic import SemanticAnalyzer
 
@@ -97,7 +98,20 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
             "end": s.end,
             "body": [_stmt_to_dict(x) for x in s.body],
         }
+    if isinstance(s, PropagateStmt):
+        return {"type": "propagate", "input": s.input_var,
+                "layer": s.layer_name, "output": s.output_var}
     raise TypeError(f"Unknown statement type: {type(s).__name__}")
+
+
+def _layer_to_dict(layer: Layer) -> Dict[str, Any]:
+    return {
+        "name": layer.name,
+        "input_dim": layer.input_dim,
+        "output_dim": layer.output_dim,
+        "weights_path": layer.weights_path,
+        "activation": layer.activation,
+    }
 
 
 def _flow_to_dict(f: Flow) -> Dict[str, Any]:
@@ -112,12 +126,15 @@ def to_config(program: Program, *, validate: bool = True) -> Dict[str, Any]:
         analyzer = SemanticAnalyzer(program)
         analyzer.analyze()
         analyzer.validate()
-    return {
+    config: Dict[str, Any] = {
         "phon_version": CONFIG_VERSION,
         "medium": _medium_to_dict(program.medium) if program.medium else None,
         "components": [_component_to_dict(c) for c in program.components],
         "flows": [_flow_to_dict(f) for f in program.flows],
     }
+    if program.layers:
+        config["layers"] = {l.name: _layer_to_dict(l) for l in program.layers}
+    return config
 
 
 def to_json(program: Program, *, validate: bool = True, indent: int = 2) -> str:

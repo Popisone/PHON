@@ -8,7 +8,7 @@ from typing import Dict, List
 from .ast_nodes import (
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, InterfereStmt,
-    LetStmt, Program, ReadStmt, ReturnStmt,
+    Layer, LetStmt, Program, PropagateStmt, ReadStmt, ReturnStmt,
 )
 
 __version__ = "0.1.0"
@@ -34,6 +34,7 @@ class SemanticAnalyzer:
         self.program = program
         self.diagnostics: List[Diagnostic] = []
         self.components: Dict[str, Component] = {}
+        self.layers: Dict[str, Layer] = {}
 
     def analyze(self) -> List[Diagnostic]:
         self._build_component_table()
@@ -45,6 +46,11 @@ class SemanticAnalyzer:
         self._check_detect_usage()
         self._check_compression_references()
         self._check_compression_parameters()
+        self._build_layer_table()
+        self._check_duplicate_layers()
+        self._check_layer_dimensions()
+        self._check_propagate_references()
+        self._check_propagate_chain()
         return self.diagnostics
 
     def errors(self) -> List[Diagnostic]:
@@ -67,6 +73,54 @@ class SemanticAnalyzer:
     def _build_component_table(self) -> None:
         for c in self.program.components:
             self.components[c.name] = c
+
+    def _build_layer_table(self) -> None:
+        for layer in self.program.layers:
+            self.layers[layer.name] = layer
+
+    def _check_duplicate_layers(self) -> None:
+        seen = set()
+        for layer in self.program.layers:
+            if layer.name in seen:
+                self._error(f"Duplicate layer name: '{layer.name}'", where="layer")
+            seen.add(layer.name)
+
+    def _check_layer_dimensions(self) -> None:
+        valid = {"relu", "sigmoid", "softmax", "linear"}
+        for layer in self.program.layers:
+            if layer.input_dim <= 0:
+                self._error(f"layer '{layer.name}': input_dim must be positive, got {layer.input_dim}", where="layer")
+            if layer.output_dim <= 0:
+                self._error(f"layer '{layer.name}': output_dim must be positive, got {layer.output_dim}", where="layer")
+            if layer.activation not in valid:
+                self._error(f"layer '{layer.name}': unknown activation '{layer.activation}' (expected one of {sorted(valid)})", where="layer")
+            if not layer.weights_path:
+                self._error(f"layer '{layer.name}': weights_path is empty", where="layer")
+
+    def _check_propagate_references(self) -> None:
+        for flow in self.program.flows:
+            for stmt in flow.statements:
+                if isinstance(stmt, PropagateStmt):
+                    if stmt.layer_name not in self.layers:
+                        self._error(f"undefined layer '{stmt.layer_name}' in propagate (flow '{flow.name}')", where="propagate")
+
+    def _check_propagate_chain(self) -> None:
+        for flow in self.program.flows:
+            shapes: Dict[str, int] = {}
+            for stmt in flow.statements:
+                if isinstance(stmt, BandStmt):
+                    shapes[stmt.name] = -1
+                elif isinstance(stmt, PropagateStmt):
+                    layer = self.layers.get(stmt.layer_name)
+                    if layer is None:
+                        continue
+                    in_shape = shapes.get(stmt.input_var)
+                    if in_shape is not None and in_shape != -1 and in_shape != layer.input_dim:
+                        self._error(
+                            f"propagate into '{layer.name}': '{stmt.input_var}' has dim {in_shape}, layer expects {layer.input_dim} (flow '{flow.name}')",
+                            where="propagate",
+                        )
+                    shapes[stmt.output_var] = layer.output_dim
 
     def _check_duplicate_components(self) -> None:
         seen = set()
@@ -138,6 +192,8 @@ class SemanticAnalyzer:
         for flow in self.program.flows:
             for stmt in flow.statements:
                 if not isinstance(stmt, BandStmt):
+                    continue
+                if stmt.freq.strip().startswith(("load(", "load ")):
                     continue
                 head = stmt.freq.split()[0] if stmt.freq.split() else ""
                 try:
