@@ -160,6 +160,67 @@ The ONNX model can be used as:
 
 ---
 
+## Optical Neural Networks (Phase 5)
+
+PHON v0.10.0 adds inference for optical neural networks: define `layer`s
+with weights, then `propagate` data through them. No training in PHON -
+weights come from any framework that can export `.npy`.
+
+### Example
+
+    layer l1 {
+        input: 784;
+        output: 128;
+        weights: "w1.npy";
+        activation: relu;
+    }
+
+    layer l2 {
+        input: 128;
+        output: 10;
+        weights: "w2.npy";
+        activation: softmax;
+    }
+
+    flow main {
+        band x = load("image.npy") @ phase 0;
+        propagate(x) through l1 -> h1;
+        propagate(h1) through l2 -> out;
+        return out;
+    }
+
+### Activations
+
+| Name | Formula |
+|---|---|
+| `relu` | `max(0, x)` |
+| `sigmoid` | `1 / (1 + exp(-x))` |
+| `softmax` | `exp(x - max(x)) / sum(exp(x - max(x)))` |
+| `linear` | `x` |
+
+### Weights format
+
+- `.npy` files (numpy format)
+- Weight matrix: shape `(output_dim, input_dim)`
+- Optional bias: `weights_bias.npy` or `weights_b.npy`, shape `(output_dim,)`
+- Paths resolved relative to the `.phon` file directory
+
+### MNIST PoC
+
+    # 1. Generate weights (once, ~5 minutes)
+    python scripts/prepare_mnist.py
+
+    # 2. Verify PHON simulator against sklearn
+    pytest tests/test_phase5_mnist.py -v
+
+Result: **97.78% accuracy** on 100 held-out MNIST samples, 0 prediction
+mismatches vs sklearn MLPClassifier (784 -> 128 relu -> 10 softmax).
+
+### Scope
+
+Phase 5 is **inference only** - no backprop, no optimizers, no training.
+Optical simulation (replacing matmul with optical propagation) is Phase 6.
+
 ## Examples
 
 | File | Description |

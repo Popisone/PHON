@@ -1,6 +1,51 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
+
+## [0.10.0] - 2026-11-01
+
+### Added - Phase 5: Optical Neural Networks (inference)
+
+- **Grammar**: `layer` definition (`input`, `output`, `weights`, `activation`);
+  `propagate(x) through layer -> y` statement; `STRING` terminal for weights paths
+- **AST**: `Layer`, `PropagateStmt` dataclasses; `Program.layers` field
+- **Parser**: `_build_layer`, `_build_propagate` + dispatch in `_build_stmt` and `_build_program`
+- **Emitter**: `layers` section in config; `propagate` statement serialization
+- **Semantic**:
+  - Duplicate layer detection
+  - `input_dim > 0`, `output_dim > 0`
+  - Activation whitelist: `relu`, `sigmoid`, `softmax`, `linear`
+  - `weights_path` non-empty
+  - `propagate` layer reference resolution
+  - Chain dimension match (`layer_N.output_dim == layer_{N+1}.input_dim`)
+  - `band x = load(...)` skipped in frequency validation
+- **Simulator**:
+  - `_activate`: relu, sigmoid, softmax, linear (numerically stable)
+  - `_simulate_propagate`: `W @ x + b` then activation
+  - `_load_npy` with per-instance cache
+  - `_extract_load_path` for `band x = load(...)` (handles quotes and parens)
+  - `propagate` handler in `_step`
+  - `tensors` namespace (separate from bands/buses/values)
+  - `base_dir` kwarg for weights path resolution
+  - Lazy numpy import - no numpy needed for non-ONN programs
+- **MNIST PoC**:
+  - `scripts/prepare_mnist.py`: downloads MNIST (Google storage), trains
+    784 -> 128 (relu) -> 10 (softmax) with sklearn MLPClassifier, exports `.npy`
+  - `examples/mnist/mnist_optical.phon`: example program
+  - `examples/mnist/mnist_demo.py`: runnable inference demo
+  - Test accuracy: 97.78%
+  - PHON simulator matches sklearn exactly on 100 held-out samples (0 mismatches)
+- **Tests**: 8 new tests (6 simulator + 2 MNIST end-to-end)
+
+### Compatibility
+
+`to_config()` output is backward compatible - `layers` key only appears when
+the program defines at least one layer. Programs without `layer`/`propagate`
+behave exactly as in v0.9.9.
+
+### Tests
+
+- 145 passing (137 existing + 8 new)
 
 ## [0.9.9] - 2026-10-31
 
