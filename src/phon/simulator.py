@@ -5,7 +5,13 @@ from __future__ import annotations
 import cmath
 import math
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 __version__ = "0.1.0"
 DEFAULT_AMPLITUDE = 1.0
@@ -85,15 +91,27 @@ class Simulator:
       - return: sets _last_result
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        *,
+        base_dir: Optional[Path] = None,
+    ) -> None:
         self.config = config
         self.bands: Dict[str, Signal] = {}
         self.buses: Dict[str, Signal] = {}
         self.resonators: Dict[str, Signal] = {}
         self.values: Dict[str, Any] = {}
+        self.tensors: Dict[str, Any] = {}
         self._last_result: Any = None
         self._components = {c["name"]: c for c in config.get("components", [])}
         self._detector_thresholds = self._build_detector_thresholds()
+        self._base_dir = Path(base_dir).resolve() if base_dir else Path(".").resolve()
+        self._weights_cache: Dict[str, Any] = {}
+        if config.get("layers") and np is None:
+            raise SimulationError(
+                "numpy is required for layer/propagate - install with: pip install numpy"
+            )
 
     @staticmethod
     def _parse_bus_list(text: str) -> List[str]:
@@ -132,6 +150,56 @@ class Simulator:
         return Signal(present[0].freq_ghz, cmath.phase(z), abs(z))
 
 
+    def _extract_load_path(self, freq_expr: str) -> Optional[str]:
+        s = freq_expr.strip()
+        if not s.lower().startswith("load"):
+            return None
+        rest = s[4:].strip()
+        if rest.startswith("(") and rest.endswith(")"):
+            rest = rest[1:-1].strip()
+        rest = rest.strip().strip('"').strip("'")
+        return rest if rest else None
+
+    def _resolve_weights_path(self, path_str: str) -> Path:
+        p = Path(path_str)
+        return p if p.is_absolute() else (self._base_dir / p)
+
+    def _load_npy(self, path_str: str) -> Any:
+        if path_str in self._weights_cache:
+            return self._weights_cache[path_str]
+        p = self._resolve_weights_path(path_str)
+        if not p.exists():
+            raise SimulationError(f"weights file not found: {p}")
+        arr = np.load(p)
+        self._weights_cache[path_str] = arr
+        return arr
+
+    def _activate(self, z: Any, kind: str) -> Any:
+        if kind == "relu":
+            return np.maximum(0.0, z)
+        if kind == "sigmoid":
+            return 1.0 / (1.0 + np.exp(-np.clip(z, -500.0, 500.0)))
+        if kind == "softmax":
+            z = np.asarray(z, dtype=float)
+            e = np.exp(z - np.max(z))
+            return e / e.sum()
+        if kind == "linear":
+            return z
+        raise SimulationError(f"Unknown activation: {kind!r}")
+
+    def _simulate_propagate(self, inp: Any, layer_cfg: Dict[str, Any]) -> Any:
+        w = self._load_npy(layer_cfg["weights_path"])
+        z = w @ np.asarray(inp, dtype=float)
+        wp = layer_cfg["weights_path"]
+        base = wp[:-4] if wp.endswith(".npy") else wp
+        for cand in (base + "_bias.npy", base + "_b.npy"):
+            try:
+                b = self._load_npy(cand)
+                z = z + b
+                break
+            except SimulationError:
+                continue
+        return self._activate(z, layer_cfg["activation"])
     def _eval_condition(self, expr: str) -> bool:
         """Evaluate a simple condition: X OP Y (OP in ==, !=, <, >, <=, >=)."""
         import re
@@ -186,11 +254,15 @@ class Simulator:
     def _step(self, stmt: Dict[str, Any]) -> None:
         t = stmt["type"]
         if t == "band":
-            self.bands[stmt["name"]] = Signal(
-                freq_ghz=parse_freq(stmt["freq"]),
-                phase_rad=parse_phase(stmt["phase"]),
-                amplitude=DEFAULT_AMPLITUDE,
-            )
+            load_path = self._extract_load_path(stmt["freq"])
+            if load_path is not None:
+                self.tensors[stmt["name"]] = self._load_npy(load_path)
+            else:
+                self.bands[stmt["name"]] = Signal(
+                    freq_ghz=parse_freq(stmt["freq"]),
+                    phase_rad=parse_phase(stmt["phase"]),
+                    amplitude=DEFAULT_AMPLITUDE,
+                )
         elif t == "emit":
             band = self.bands.get(stmt["expr"])
             if band is None:
@@ -350,8 +422,23 @@ class Simulator:
                 compression_ratio=src_sig.compression_ratio,
                 wdm_channels=src_sig.wdm_channels * n,
             )
+        elif t == "propagate":
+            layer_name = stmt["layer"]
+            layer_cfg = (self.config.get("layers") or {}).get(layer_name)
+            if layer_cfg is None:
+                raise SimulationError(f"Unknown layer: {layer_name!r}")
+            inp = self.tensors.get(stmt["input"])
+            if inp is None:
+                raise SimulationError(
+                    f"propagate input {stmt['input']!r} is not a tensor "
+                    f"(did you band x = load(...) first?)"
+                )
+            self.tensors[stmt["output"]] = self._simulate_propagate(inp, layer_cfg)
         elif t == "return":
             expr = stmt["expr"]
+            if expr in self.tensors:
+                self._last_result = self.tensors[expr]
+                return
             if expr in self.values:
                 self._last_result = self.values[expr]
             elif expr in self.bands:
