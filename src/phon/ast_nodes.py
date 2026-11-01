@@ -69,10 +69,27 @@ class Flow:
 
 
 @dataclass
+class Layer:
+    name: str
+    input_dim: int
+    output_dim: int
+    weights_path: str
+    activation: str
+
+
+@dataclass
+class PropagateStmt:
+    input_var: str
+    layer_name: str
+    output_var: str
+
+
+@dataclass
 class Program:
     medium: Optional[Medium] = None
     components: List[Component] = field(default_factory=list)
     flows: List[Flow] = field(default_factory=list)
+    layers: List[Layer] = field(default_factory=list)
 
 @dataclass
 class IfStmt:

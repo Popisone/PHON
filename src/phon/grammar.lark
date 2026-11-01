@@ -1,7 +1,7 @@
 // PHON v0.3 grammar - full operator set + if statement
 start: program
 
-program: (medium_def | component_def | flow_def | compressor | channel)*
+program: (medium_def | component_def | layer_def | flow_def | compressor | channel)*
 
 medium_def: "medium" IDENT "{" field* "}"
 
@@ -27,6 +27,7 @@ flow_def: "flow" IDENT "{" flow_stmt* "}"
           | while_stmt
           | break_stmt
           | continue_stmt
+          | propagate_stmt
 
 band_stmt: "band" IDENT "=" expr "@" "phase" expr ";"
 emit_stmt: "emit" LPAREN expr RPAREN ARROW IDENT ";"
@@ -53,7 +54,7 @@ path_chain: POINT (ARROW POINT)+
 ?mul_expr: unary_expr ((STAR|SLASH) unary_expr)*
 unary_expr: MINUS unary_expr | postfix_expr
 postfix_expr: atom | atom UNIT
-?atom: NUMBER | IDENT | LPAREN expr RPAREN | func_call | POINT | detect_expr
+?atom: NUMBER | STRING | IDENT | LPAREN expr RPAREN | func_call | POINT | detect_expr
 
 func_call: IDENT LPAREN (expr (COMMA expr)*)? RPAREN
 detect_expr: "detect" [LPAREN] IDENT [RPAREN]
@@ -83,11 +84,20 @@ COMMA: ","
 POINT: /\[[^\[\]]+\]/
 IDENT: /[A-Za-z_][A-Za-z0-9_]*/
 NUMBER: /[0-9]+(\.[0-9]+)?/
+STRING: /"[^"]*"/
 
 %import common.WS
 %ignore WS
 %ignore /\/\/[^\n]*/
 %ignore /\/\*.*?\*\//s
+// --- v0.5: Optical Neural Network (Phase 5) ---
+layer_def: "layer" IDENT "{" (layer_input | layer_output | layer_weights | layer_activation)+ "}"
+layer_input: "input" ":" NUMBER ";"
+layer_output: "output" ":" NUMBER ";"
+layer_weights: "weights" ":" STRING ";"
+layer_activation: "activation" ":" IDENT ";"
+propagate_stmt: "propagate" "(" IDENT ")" "through" IDENT "->" IDENT ";"
+
 // --- v0.4: Compression & Transmission ---
 compressor: "compressor" IDENT "{" "ratio:" NUMBER ";" "}"
 channel: "channel" IDENT "{" "bandwidth:" NUMBER "GHz" ";" channel_field* "}"

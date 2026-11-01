@@ -5,6 +5,7 @@ from pathlib import Path
 
 from lark import Lark, Token, Tree
 
+from .ast_nodes import Layer, PropagateStmt  # noqa: F401
 from .ast_nodes import (
     BreakStmt, ContinueStmt,
     WhileStmt,
@@ -193,6 +194,8 @@ def _build_stmt(child):
             num_channels=int(float(numbers[0])),
             target=str(idents[1]),
         )
+    if rule == "propagate_stmt":
+        return _build_propagate(child)
     if rule == "break_stmt":
         return BreakStmt()
     if rule == "continue_stmt":
@@ -272,6 +275,33 @@ def _build_nested_stmts(children):
             out.append(ReadStmt(source=sems[0], target=sems[1]))
     return out
 
+def _build_layer(node) -> Layer:
+    name = str(node.children[0])
+    inp, out, wp, act = 0, 0, "", "linear"
+    for sub in node.children[1:]:
+        if not isinstance(sub, Tree):
+            continue
+        if sub.data == "layer_input":
+            inp = int(float(sub.children[0].value))
+        elif sub.data == "layer_output":
+            out = int(float(sub.children[0].value))
+        elif sub.data == "layer_weights":
+            wp = str(sub.children[0].value).strip('\"')
+        elif sub.data == "layer_activation":
+            act = str(sub.children[0].value)
+    return Layer(name=name, input_dim=inp, output_dim=out,
+                 weights_path=wp, activation=act)
+
+
+def _build_propagate(child) -> PropagateStmt:
+    idents = [c for c in child.children if hasattr(c, "type") and c.type == "IDENT"]
+    return PropagateStmt(
+        input_var=str(idents[0]),
+        layer_name=str(idents[1]),
+        output_var=str(idents[2]),
+    )
+
+
 def _build_program(program_node) -> Program:
     prog = Program()
     for child in program_node.children:
@@ -281,6 +311,8 @@ def _build_program(program_node) -> Program:
             prog.medium = _build_medium(child)
         elif child.data == "component_def":
             prog.components.append(_build_component(child))
+        elif child.data == "layer_def":
+            prog.layers.append(_build_layer(child))
         elif child.data == "flow_def":
             prog.flows.append(_build_flow(child))
         elif child.data == "compressor":
