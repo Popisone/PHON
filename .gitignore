@@ -45,3 +45,5 @@ phon-v*-release.zip
 # Generated ML/audio artifacts
 *.wav
 *.jsonl
+
+examples/mnist/mnist.npz
