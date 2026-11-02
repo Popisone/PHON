@@ -1,0 +1,7 @@
+flow main {
+  // Generated 4x4 MZI Mesh
+  mzi m1 { theta: 0.7854; phi: 0.0; input: "x0"; }
+  mzi m2 { theta: 0.0; phi: 0.0; input: "x2"; }
+  mzi m3 { theta: 0.0; phi: 0.0; input: "x1"; }
+  mzi m4 { theta: 0.0; phi: 0.0; input: "x3"; }
+}
