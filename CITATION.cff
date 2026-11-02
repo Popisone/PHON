@@ -1,26 +1,43 @@
 cff-version: 1.2.0
-message: "If you use PHON in academic work, please cite this repository."
-title: "PHON: Phononic Orchestration Notation"
+message: "If you use PHON in your research, please cite this repository."
+title: "PHON: A Domain-Specific Language for Photonic and Phononic Wave Simulation with Neural Network Inference"
 abstract: >-
-  A declarative DSL for programming phononic (acoustic) computing circuits.
-  Programs specify physical media, wave components, and signal flow using
-  frequencies, phases, and amplitudes. Includes a reference simulator
-  (idealized complex amplitude and 1D FDTD) and an LLM-assisted code
-  generation pipeline. The specification is licensed under CC BY-SA 4.0;
-  the reference implementation under Apache 2.0.
+  PHON is an open-source DSL for wave-based circuit design, supporting both
+  photonic (optical) and phononic (acoustic) media through a unified
+  declarative syntax. Because linear wave propagation is mathematically
+  identical for light and sound, the same DSL source compiles to simulation,
+  GDSII layout export, and (as of v0.10.0) neural network inference via
+  layer/propagate primitives with numpy-backed matmul. The medium attribute
+  dispatches physics constants (refractive index, sound velocity) without
+  changing the computation, enabling cross-medium weight transfer.
+  v0.10.0 simulates on CPU; physical deployment (photonic chips, SAW devices)
+  is future work. A companion pipeline (PHON-LLM, separate repository)
+  provides natural-language frontends: 135M LoRA-tuned code generation with
+  constrained decoding (98% syntax validity) and hybrid parameter extraction
+  (regex + Qwen-0.5B/Outlines CFG, 100% on curated and novel eval sets).
+  Phase 5 (v0.10.0) achieves 97.78% MNIST test accuracy with 0 mismatches
+  versus scikit-learn predictions on a 100-sample audit set.
 authors:
-  - name: "The PHON Authors"
-version: "0.3.0"
-date-released: "2026-10-29"
-license: "Apache-2.0"
-license-url: "https://www.apache.org/licenses/LICENSE-2.0"
-# TODO: Replace with your actual repository URL before publishing
+  - family-names: "Georgiev"
+    given-names: "Georgi"
+    alias: "GGeorgiev"
 repository-code: "https://github.com/Popisone/PHON"
+url: "https://github.com/Popisone/PHON"
+license: Apache-2.0
+license-url: "https://github.com/Popisone/PHON/blob/main/LICENSE"
+version: "0.10.0"
+date-released: "2026-11-01"
 keywords:
+  - photonics
   - phononics
-  - acoustic computing
-  - DSL
-  - declarative programming
-  - wave interference
-  - FDTD
-  - computational physics
+  - silicon-photonics
+  - surface-acoustic-waves
+  - domain-specific-language
+  - optical-neural-networks
+  - phononic-neural-networks
+  - wave-computing
+  - gdsii
+  - compiler
+  - simulator
+  - llm-code-generation
+type: software

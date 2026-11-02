@@ -1,33 +1,39 @@
 {
-  "title": "PHON: Phononic Orchestration Notation",
-  "description": "<p>A declarative DSL for programming phononic (acoustic) computing circuits. Programs specify physical media, wave components, and signal flow using frequencies, phases, and amplitudes. Includes a reference simulator (idealized complex amplitude and 1D FDTD) and an LLM-assisted code generation pipeline.</p><p>The language specification is licensed under CC BY-SA 4.0; the reference implementation is licensed under Apache 2.0.</p>",
+  "title": "PHON: A Domain-Specific Language for Photonic and Phononic Wave Simulation with Neural Network Inference",
+  "description": "<p>PHON is an open-source DSL for wave-based circuit design, supporting both photonic (optical) and phononic (acoustic) media through a unified declarative syntax. Linear wave propagation is mathematically identical for light and sound; the <code>medium kind</code> attribute dispatches physics constants (refractive index, sound velocity) without changing the computation. A single source compiles to: (1) a Python simulation, (2) GDSII layout (viewable in KLayout), (3) neural network inference via <code>layer</code>/<code>propagate</code> primitives with relu/sigmoid/softmax/linear activations, and (4) an ONNX surrogate for fast parameter sweeps.</p><p>As of v0.10.0, the MNIST PoC achieves 97.78% test accuracy with 0 mismatches versus scikit-learn on a 100-sample audit set. A companion pipeline (PHON-LLM, separate repository) provides natural-language frontends: 135M LoRA-tuned code generation with constrained decoding (98% syntax validity on 50-prompt eval) and hybrid parameter extraction (regex-first + Qwen-0.5B/Outlines CFG fallback, 100% on curated and novel eval sets).</p><p><strong>History:</strong> PHON was originally developed as a phononic (acoustic) DSL in early versions; it was later expanded to photonic circuits and, in v0.10.0, unified as a medium-agnostic wave-computation DSL. Both media are first-class citizens.</p><p><strong>Scope disclaimer:</strong> v0.10.0 simulates wave propagation and neural network inference on CPU using numpy. It is not a physical photonic or phononic hardware implementation, nor a compiler to real photonic/SAW hardware primitives (MZI mesh, phase shifters, IDT transducers) &mdash; that is planned for future phases. Claims of \"wave-based AI\" refer to the simulation framework, not deployed hardware.</p>",
   "creators": [
     {
-      "name": "The PHON Authors"
+      "name": "Georgiev, Georgi",
+      "affiliation": "Independent"
     }
   ],
-  "license": {
-    "id": "Apache-2.0"
-  },
   "upload_type": "software",
+  "license": "Apache-2.0",
   "access_right": "open",
-  "version": "0.3.0",
-  "publication_date": "2026-10-29",
+  "version": "0.10.0",
+  "publication_date": "2026-11-01",
   "keywords": [
+    "photonics",
     "phononics",
-    "acoustic computing",
+    "silicon photonics",
+    "surface acoustic waves",
+    "domain-specific language",
+    "optical neural networks",
+    "phononic neural networks",
+    "wave computing",
     "DSL",
-    "declarative programming",
-    "wave interference",
-    "FDTD",
-    "computational physics"
+    "GDSII",
+    "compiler",
+    "simulator",
+    "LLM code generation",
+    "constrained decoding"
   ],
   "related_identifiers": [
     {
-      "relation": "isSupplementTo",
       "identifier": "https://github.com/Popisone/PHON",
-      "resource_type": "software"
+      "relation": "isSupplementTo",
+      "scheme": "url"
     }
   ],
-  "language": "eng"
+  "notes": "Code: Apache-2.0. Written specification: CC BY-SA 4.0 (see SPEC.md header). PHON-LLM companion pipeline is maintained in a separate repository and depends on PHON via editable install. Base models used in PHON-LLM (Qwen2.5-0.5B-Instruct, SmolLM-135M) are Apache-2.0. MNIST dataset: Yann LeCun, CC BY-SA 3.0. See NOTICE for full third-party attributions."
 }
