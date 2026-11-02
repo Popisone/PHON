@@ -5,7 +5,7 @@ abstract: >-
   PHON is an open-source DSL for photonic and phononic circuit design and neural network inference. A single source compiles to simulation, GDSII layout export, and neural network inference via layer/propagate primitives with numpy-backed matmul.
   As of v0.10.1, PHON natively supports both photonic (optical) and phononic (acoustic) media through a unified `medium kind` attribute, dispatching physics constants (refractive index, sound velocity) without changing the computation, enabling cross-medium weight transfer.
   v0.10.1 simulates on CPU; physical deployment (photonic chips, SAW devices) is future work.
-  Phase 5 (v0.10.0) achieves 97.78% MNIST test accuracy with 0 mismatches versus scikit-learn predictions on a 100-sample audit set. The test suite includes 148 passing tests.
+  Phase 6 (v0.11.0) adds MZI (Mach-Zehnder Interferometer) optical simulation and SVD-based mesh generation. Phase 5 (v0.10.0) achieves 97.78% MNIST test accuracy with 0 mismatches versus scikit-learn predictions on a 100-sample audit set. The test suite includes 148 passing tests.
 authors:
   - family-names: "Georgiev"
     given-names: "Georgi"
@@ -14,7 +14,7 @@ repository-code: "https://github.com/Popisone/PHON"
 url: "https://github.com/Popisone/PHON"
 license: Apache-2.0
 license-url: "https://github.com/Popisone/PHON/blob/main/LICENSE"
-version: "0.10.1"
+version: "0.11.0"
 date-released: "2026-11-02"
 keywords:
   - photonics
