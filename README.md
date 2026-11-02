@@ -5,7 +5,7 @@
 **A Python-like DSL for photonic circuits -- design, simulate, verify, export to GDSII.**
 
 [![Tests](https://img.shields.io/badge/tests-155%20passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-0.12.0-blue)]()
+[![Version](https://img.shields.io/badge/version-0.13.0-blue)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0%20%2F%20CC%20BY--SA%204.0-green)]()
 
 PHON is an open-source DSL with a written specification and reference implementation. A single declarative source compiles to: (1) Python simulation, (2) GDSII layout (viewable in KLayout), (3) neural network inference via layer/propagate, and (4) MZI mesh compilation for optical hardware. PHON supports both **photonic** and **phononic** media through a unified syntax.
@@ -138,7 +138,7 @@ This is a heuristic, not a physical propagation model. Phase 6 (MZI) provides th
 
 ### Verified results
 
-- 155 passing tests (pytest tests/)
+- 184 passing tests (pytest tests/)
 - MNIST: 97.78% accuracy, 0 mismatches vs sklearn on 100-sample audit
 - Code generation: 49/50 syntax valid, 47/50 semantic (v2 + CFG)
 - Parameter extraction: 200/200 (20 curated + 30 novel + 150 generated)
@@ -153,5 +153,5 @@ PHON was originally developed as a phononic (acoustic) DSL in early versions. It
 ## Links
 
 - GitHub: https://github.com/Popisone/PHON
-- Zenodo: https://doi.org/10.5281/zenodo.23881345
+- Zenodo: https://doi.org/10.5281/zenodo.23889072
 - Changelog: CHANGELOG.md

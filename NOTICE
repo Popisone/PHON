@@ -42,7 +42,7 @@ PHON-LLM companion pipeline (separate repository) uses:
 SCOPE AND NON-CLAIMS
 ======================================================================
 
-PHON v0.10.0 is research software. It simulates wave propagation
+PHON v0.13.0 is research software. It simulates wave propagation
 and neural network inference on CPU using numpy. It does NOT implement
 physical photonic or phononic hardware, and it does NOT compile to
 fabrication-ready layouts without PDK-specific post-processing.
