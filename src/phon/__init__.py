@@ -1,6 +1,6 @@
-"""PHON - Phononic Orchestration Notation."""
+﻿"""PHON - Phononic Orchestration Notation."""
 
-__version__ = "0.10.1"
+__version__ = "0.11.0"
 
 from phon.lexer import LexError, Lexer, Token, tokenize
 from phon.ast_nodes import (

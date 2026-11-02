@@ -1,10 +1,10 @@
-[build-system]
+﻿[build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "phon"
-version = "0.10.1"
+version = "0.11.0"
 description = "PHON - Phononic Orchestration Notation (open standard + reference implementation)"
 readme = "README.md"
 requires-python = ">=3.10"

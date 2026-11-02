@@ -196,8 +196,8 @@ class Simulator:
                                          [e^{i phi} sin(theta),  cos(theta)]]
         """
         fields = mzi_cfg.get("fields", {})
-        theta = float(fields.get("theta", 0.0))
-        phi = float(fields.get("phi", 0.0))
+        theta = float(str(fields.get("theta", 0.0)).replace(" ", ""))
+        phi = float(str(fields.get("phi", 0.0)).replace(" ", ""))
         
         # 2x2 Unitary Matrix for MZI
         c, s = math.cos(theta), math.sin(theta)

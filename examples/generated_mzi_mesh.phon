@@ -1,0 +1,5 @@
+flow main {
+  // Target matrix: [[0.6, -0.8], [0.8, 0.6]]
+  // Generated MZI Mesh for 2x2 multiplication
+  mzi mesh_1 { theta: -2.2142974355881813; phi: 0.0; input: "x"; }
+}
