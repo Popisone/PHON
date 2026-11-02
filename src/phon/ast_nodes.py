@@ -180,3 +180,13 @@ class FiberStmt:
 class MZIApplyStmt:
     name: str
     fields: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class PhaseApplyStmt:
+    """phase_apply p1 { fiber: "f0"; mode: 0; phase: 0.5; }"""
+    name: str
+    fields: Dict[str, Any] = None
+
+    def __post_init__(self):
+        if self.fields is None:
+            self.fields = {}

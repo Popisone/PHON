@@ -474,6 +474,17 @@ class Simulator:
             theta = float(str(fields.get("theta", "0.0")).replace(" ", ""))
             phi = float(str(fields.get("phi", "0.0")).replace(" ", ""))
             self.tensors[stmt["name"]] = self._simulate_mzi_apply(fiber, i, j, theta, phi)
+        elif t == "phase_apply":
+            fields = stmt.get("fields", {})
+            fiber_name = fields.get("fiber", "").strip('"\'')
+            fiber = self.tensors.get(fiber_name)
+            if fiber is None:
+                raise SimulationError(f"phase_apply: unknown fiber {fiber_name!r}")
+            mode = int(float(fields.get("mode", "0")))
+            phase = float(str(fields.get("phase", "0.0")).replace(" ", ""))
+            fiber = fiber.copy()
+            fiber[mode] *= np.exp(1j * phase)
+            self.tensors[stmt["name"]] = fiber
         elif t == "propagate":
             layer_name = stmt["layer"]
             layer_cfg = (self.config.get("layers") or {}).get(layer_name)

@@ -49,6 +49,9 @@ def _stmt_to_dict(s: Any) -> Dict[str, Any]:
         return {"type": "fiber", "name": s.name, "fields": s.fields}
     if isinstance(s, MZIApplyStmt):
         return {"type": "mzi_apply", "name": s.name, "fields": s.fields}
+    from phon.ast_nodes import PhaseApplyStmt
+    if isinstance(s, PhaseApplyStmt):
+        return {"type": "phase_apply", "name": s.name, "fields": s.fields}
     from phon.ast_nodes import MZI
     if isinstance(s, MZI):
         return {"type": "mzi", "name": s.name, "fields": s.fields}

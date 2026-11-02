@@ -12,7 +12,7 @@ field: IDENT ":" value ";"
 
 flow_def: "flow" IDENT "{" flow_stmt* "}"
 
-?flow_stmt: band_stmt | mzi_stmt | fiber_stmt | mzi_apply_stmt
+?flow_stmt: band_stmt | mzi_stmt | fiber_stmt | mzi_apply_stmt | phase_apply_stmt
           | emit_stmt
           | interfere_stmt
           | capture_stmt
@@ -117,3 +117,5 @@ continue_stmt: "continue" ";"
 mzi_stmt: "mzi" IDENT "{" field* "}"
 fiber_stmt: "fiber" IDENT "{" field* "}"
 mzi_apply_stmt: "mzi_apply" IDENT "{" field* "}"
+
+phase_apply_stmt: "phase_apply" IDENT "{" field* "}"
