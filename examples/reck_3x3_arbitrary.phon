@@ -1,0 +1,6 @@
+flow main {
+  fiber f0 { vals: "1.0,0.0,0.0"; }
+  mzi_apply m1 { theta: -0.4999999999998306; phi: 3.441592653589659; fiber: "f0"; i: 0; j: 1; }
+  mzi_apply m2 { theta: -0.3000000000001608; phi: -3.3415926535898004; fiber: "m1"; i: 1; j: 2; }
+  mzi_apply m3 { theta: -2.441592653589675; phi: 0.09999999999993167; fiber: "m2"; i: 0; j: 1; }
+}
