@@ -44,6 +44,11 @@ def _component_to_dict(c: Any) -> Dict[str, Any]:
 
 
 def _stmt_to_dict(s: Any) -> Dict[str, Any]:
+    from phon.ast_nodes import FiberStmt, MZIApplyStmt
+    if isinstance(s, FiberStmt):
+        return {"type": "fiber", "name": s.name, "fields": s.fields}
+    if isinstance(s, MZIApplyStmt):
+        return {"type": "mzi_apply", "name": s.name, "fields": s.fields}
     from phon.ast_nodes import MZI
     if isinstance(s, MZI):
         return {"type": "mzi", "name": s.name, "fields": s.fields}

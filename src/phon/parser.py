@@ -154,6 +154,10 @@ def _build_component(node) -> Component:
 
 
 def _build_stmt(child):
+    if child.data == "fiber_stmt":
+        return _build_fiber_stmt(child)
+    if child.data == "mzi_apply_stmt":
+        return _build_mzi_apply_stmt(child)
     if child.data == "mzi_stmt":
         return _build_mzi_stmt(child)
     """Build one statement Tree -> AST node. Returns None if unknown."""
@@ -385,3 +389,13 @@ def _build_mzi(node) -> MZI:
 
 def _build_mzi_stmt(node) -> MZI:
     return MZI(name=str(node.children[0]), fields=_fields_from(node))
+
+
+def _build_fiber_stmt(node):
+    from phon.ast_nodes import FiberStmt
+    return FiberStmt(name=str(node.children[0]), fields=_fields_from(node))
+
+
+def _build_mzi_apply_stmt(node):
+    from phon.ast_nodes import MZIApplyStmt
+    return MZIApplyStmt(name=str(node.children[0]), fields=_fields_from(node))

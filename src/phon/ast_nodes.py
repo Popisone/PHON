@@ -168,3 +168,15 @@ class WdmStmt:
 class MZI:
     name: str
     fields: Dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class FiberStmt:
+    name: str
+    fields: Dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class MZIApplyStmt:
+    name: str
+    fields: Dict[str, str] = field(default_factory=dict)

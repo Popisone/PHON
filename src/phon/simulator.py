@@ -207,6 +207,19 @@ class Simulator:
         ])
         return U @ inp
 
+
+    def _simulate_mzi_apply(self, fiber: np.ndarray, i: int, j: int,
+                            theta: float, phi: float) -> np.ndarray:
+        """Apply MZI to fiber[i], fiber[j] in-place (returns new fiber)."""
+        a, b = fiber[i], fiber[j]
+        c, sn = math.cos(theta), math.sin(theta)
+        new_a = np.exp(1j * phi) * c * a - sn * b
+        new_b = np.exp(1j * phi) * sn * a + c * b
+        fiber = fiber.copy()
+        fiber[i] = new_a
+        fiber[j] = new_b
+        return fiber
+
     def _simulate_propagate(self, inp: Any, layer_cfg: Dict[str, Any]) -> Any:
         w = self._load_npy(layer_cfg["weights_path"])
         z = w @ np.asarray(inp, dtype=float)
@@ -446,6 +459,21 @@ class Simulator:
             input_name = stmt.get("fields", {}).get("input", "").strip('"\'')
             inp = self.tensors.get(input_name, np.zeros(2, dtype=complex))
             self.tensors[stmt["name"]] = self._simulate_mzi(inp, stmt)
+        elif t == "fiber":
+            vals_str = stmt.get("fields", {}).get("vals", '""').strip('"\'')
+            vals = [complex(float(x)) for x in vals_str.split(",")]
+            self.tensors[stmt["name"]] = np.array(vals, dtype=complex)
+        elif t == "mzi_apply":
+            fields = stmt.get("fields", {})
+            fiber_name = fields.get("fiber", "").strip('"\'')
+            fiber = self.tensors.get(fiber_name)
+            if fiber is None:
+                raise SimulationError(f"mzi_apply: unknown fiber {fiber_name!r}")
+            i = int(float(fields.get("i", "0")))
+            j = int(float(fields.get("j", "1")))
+            theta = float(str(fields.get("theta", "0.0")).replace(" ", ""))
+            phi = float(str(fields.get("phi", "0.0")).replace(" ", ""))
+            self.tensors[stmt["name"]] = self._simulate_mzi_apply(fiber, i, j, theta, phi)
         elif t == "propagate":
             layer_name = stmt["layer"]
             layer_cfg = (self.config.get("layers") or {}).get(layer_name)
