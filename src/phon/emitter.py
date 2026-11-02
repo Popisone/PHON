@@ -44,6 +44,9 @@ def _component_to_dict(c: Any) -> Dict[str, Any]:
 
 
 def _stmt_to_dict(s: Any) -> Dict[str, Any]:
+    from phon.ast_nodes import MZI
+    if isinstance(s, MZI):
+        return {"type": "mzi", "name": s.name, "fields": s.fields}
     if isinstance(s, BandStmt):
         return {"type": "band", "name": s.name, "freq": s.freq, "phase": s.phase}
     if isinstance(s, EmitStmt):
@@ -163,3 +166,7 @@ if __name__ == "__main__":
         sys.exit(2)
     out = sys.argv[2] if len(sys.argv) > 2 else None
     print(emit_file(sys.argv[1], out))
+
+
+def _mzi_to_dict(mzi) -> dict:
+    return {'name': mzi.name, 'type': 'mzi', 'fields': mzi.fields}

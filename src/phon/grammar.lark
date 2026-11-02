@@ -1,17 +1,18 @@
 // PHON v0.3 grammar - full operator set + if statement
 start: program
 
-program: (medium_def | component_def | layer_def | flow_def | compressor | channel)*
+program: (medium_def | component_def | layer_def | flow_def | compressor | channel | mzi_def)*
 
 medium_def: "medium" IDENT "{" field* "}"
 
 component_def: COMPONENT_TYPE IDENT "{" field* "}"
+mzi_def: "mzi" IDENT "{" field* "}"
 
 field: IDENT ":" value ";"
 
 flow_def: "flow" IDENT "{" flow_stmt* "}"
 
-?flow_stmt: band_stmt
+?flow_stmt: band_stmt | mzi_stmt
           | emit_stmt
           | interfere_stmt
           | capture_stmt
@@ -112,3 +113,5 @@ while_stmt: "while" condition "{" flow_stmt* "}"
 
 break_stmt: "break" ";"
 continue_stmt: "continue" ";"
+
+mzi_stmt: "mzi" IDENT "{" field* "}"

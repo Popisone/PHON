@@ -90,6 +90,7 @@ class Program:
     components: List[Component] = field(default_factory=list)
     flows: List[Flow] = field(default_factory=list)
     layers: List[Layer] = field(default_factory=list)
+    mzis: List[MZI] = field(default_factory=list)
 
 @dataclass
 class IfStmt:
@@ -162,3 +163,8 @@ class WdmStmt:
     source: str
     num_channels: int
     target: str
+
+@dataclass
+class MZI:
+    name: str
+    fields: Dict[str, str] = field(default_factory=dict)

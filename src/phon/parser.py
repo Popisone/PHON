@@ -12,7 +12,7 @@ from .ast_nodes import (
     ForStmt,
     Compressor, Channel, CompressStmt, TransmitStmt,
     BandStmt, CaptureStmt, Component, EmitStmt, Flow, IfStmt, StoreStmt, WdmStmt,
-    InterfereStmt, LetStmt, Medium, Program, ReadStmt, ReturnStmt,
+    InterfereStmt, LetStmt, Medium, MZI, Program, ReadStmt, ReturnStmt,
 )
 
 __version__ = "0.3.0"
@@ -154,6 +154,8 @@ def _build_component(node) -> Component:
 
 
 def _build_stmt(child):
+    if child.data == "mzi_stmt":
+        return _build_mzi_stmt(child)
     """Build one statement Tree -> AST node. Returns None if unknown."""
     if not isinstance(child, Tree):
         return None
@@ -309,6 +311,8 @@ def _build_program(program_node) -> Program:
             continue
         if child.data == "medium_def":
             prog.medium = _build_medium(child)
+        elif child.data == "mzi_def":
+            prog.mzis.append(_build_mzi(child))
         elif child.data == "component_def":
             prog.components.append(_build_component(child))
         elif child.data == "layer_def":
@@ -373,3 +377,11 @@ def _build_while(node) -> WhileStmt:
             if stmt is not None:
                 body_stmts.append(stmt)
     return WhileStmt(condition=cond_str, body=body_stmts)
+
+
+def _build_mzi(node) -> MZI:
+    return MZI(name=str(node.children[0]), fields=_fields_from(node))
+
+
+def _build_mzi_stmt(node) -> MZI:
+    return MZI(name=str(node.children[0]), fields=_fields_from(node))

@@ -189,6 +189,24 @@ class Simulator:
             return z
         raise SimulationError(f"Unknown activation: {kind!r}")
 
+    
+    def _simulate_mzi(self, inp: np.ndarray, mzi_cfg: dict) -> np.ndarray:
+        """Simulate a 2x2 Mach-Zehnder Interferometer.
+        Applies the unitary matrix U = [[e^{i phi} cos(theta), -sin(theta)],
+                                         [e^{i phi} sin(theta),  cos(theta)]]
+        """
+        fields = mzi_cfg.get("fields", {})
+        theta = float(fields.get("theta", 0.0))
+        phi = float(fields.get("phi", 0.0))
+        
+        # 2x2 Unitary Matrix for MZI
+        c, s = math.cos(theta), math.sin(theta)
+        U = np.array([
+            [np.exp(1j * phi) * c, -s],
+            [np.exp(1j * phi) * s,  c]
+        ])
+        return U @ inp
+
     def _simulate_propagate(self, inp: Any, layer_cfg: Dict[str, Any]) -> Any:
         w = self._load_npy(layer_cfg["weights_path"])
         z = w @ np.asarray(inp, dtype=float)
@@ -424,6 +442,10 @@ class Simulator:
                 compression_ratio=src_sig.compression_ratio,
                 wdm_channels=src_sig.wdm_channels * n,
             )
+        elif t == "mzi":
+            input_name = stmt.get("fields", {}).get("input", "").strip('"\'')
+            inp = self.tensors.get(input_name, np.zeros(2, dtype=complex))
+            self.tensors[stmt["name"]] = self._simulate_mzi(inp, stmt)
         elif t == "propagate":
             layer_name = stmt["layer"]
             layer_cfg = (self.config.get("layers") or {}).get(layer_name)
