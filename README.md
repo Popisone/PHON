@@ -6,8 +6,8 @@
 
 > **Unified Medium (v0.10.1):** PHON now natively supports both **photonic** (optical) and **phononic** (acoustic) media via the `medium kind` attribute, dispatching physics constants without changing the mathematical computation.
 
-[![Tests](https://img.shields.io/badge/tests-151%20passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-0.11.0-blue)]()
+[![Tests](https://img.shields.io/badge/tests-154%20passing-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-0.12.0-blue)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0%20%2F%20CC%20BY--SA%204.0-green)]()
 
 PHON is an open-source DSL and reference implementation for describing photonic systems at a high level. Write <code>.phon</code> code, simulate physics, export to GDSII.
@@ -256,8 +256,8 @@ python scripts/test_examples.py
 
 ## Status
 
-- Version **0.11.0** (pre-1.0 — expect breaking changes)
-- **151 tests** passing
+- Version **0.12.0** (pre-1.0 — expect breaking changes)
+- **154 tests** passing
 - GDSII export via <code>gdstk</code>
 - ML surrogate via <code>scikit-learn</code> + <code>onnxruntime</code>
 - Handoff protocol in <code>HANDOFF*.md</code> files
@@ -273,7 +273,7 @@ python -m venv .venv
 .venv\Scripts\activate           # Windows
 # source .venv/bin/activate      # Unix
 pip install -e .
-python -m pytest tests\ -q       # 151 passed
+python -m pytest tests\ -q       # 154 passed
 ~~~
 
 **Requirements:** Python 3.10+, <code>lark</code>, <code>numpy</code>, <code>scikit-learn</code>, <code>onnxruntime</code>, <code>gdstk</code>.
