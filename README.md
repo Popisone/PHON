@@ -1,8 +1,10 @@
 # PHON
 
-> A domain-specific language for photonic and phononic wave simulation with neural network inference.
+> A domain-specific language for photonic circuit design and optical neural network inference.
 
 **A Python-like DSL for photonic circuits — design, simulate, verify, export to GDSII.**
+
+> **Planned extension:** Phononic (acoustic) support via a unified `medium kind` attribute is under development (Phase 5.5). Current v0.10.0 implements photonic circuits and optical NN inference.
 
 [![Tests](https://img.shields.io/badge/tests-145%20passing-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-0.10.0-blue)]()
