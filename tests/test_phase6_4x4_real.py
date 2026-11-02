@@ -7,8 +7,8 @@ from phon.simulator import Simulator
 
 
 def test_4x4_givens_mesh():
-    phon_path = Path(r"C:\Projects\PHON\examples\reck_4x4_real.phon")
-    U_path = Path(r"C:\Projects\PHON\examples\reck_4x4_real_U.npy")
+    phon_path = Path(__file__).resolve().parent.parent / "examples" / "reck_4x4_real.phon"
+    U_path = Path(__file__).resolve().parent.parent / "examples" / "reck_4x4_real_U.npy"
 
     src = phon_path.read_text(encoding="utf-8")
     U_target = np.load(U_path)

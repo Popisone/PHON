@@ -7,8 +7,8 @@ from phon.simulator import Simulator
 
 def test_arbitrary_3x3_decomposition():
     # End-to-end: Givens-optimized angles -> PHON mesh -> matches target U
-    phon_path = Path(r"C:\Projects\PHON\examples\reck_3x3_arbitrary.phon")
-    U_path = Path(r"C:\Projects\PHON\examples\reck_3x3_arbitrary_U.npy")
+    phon_path = Path(__file__).resolve().parent.parent / "examples" / "reck_3x3_arbitrary.phon"
+    U_path = Path(__file__).resolve().parent.parent / "examples" / "reck_3x3_arbitrary_U.npy"
     
     src = phon_path.read_text(encoding="utf-8")
     U_target = np.load(U_path)

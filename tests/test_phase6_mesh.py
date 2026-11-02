@@ -7,7 +7,7 @@ from phon.simulator import Simulator
 
 def test_generated_mzi_matches_numpy():
     # Зареждаме генерирания PHON код
-    phon_path = Path(r"C:\Projects\PHON\examples\generated_mzi_mesh.phon")
+    phon_path = Path(__file__).resolve().parent.parent / "examples" / "generated_mzi_mesh.phon"
     src = phon_path.read_text(encoding="utf-8")
     cfg = to_config(parse(src))
     

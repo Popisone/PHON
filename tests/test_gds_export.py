@@ -1,6 +1,7 @@
-﻿import os
+import pytest
+import os
 import tempfile
-import gdstk
+gdstk = pytest.importorskip("gdstk")
 from phon.parser import parse
 from phon.gds_export import build_gds
 

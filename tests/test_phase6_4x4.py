@@ -6,7 +6,7 @@ from phon.emitter import to_config
 from phon.simulator import Simulator
 
 def test_4x4_mesh():
-    phon_path = Path(r"C:\Projects\PHON\examples\reck_4x4.phon")
+    phon_path = Path(__file__).resolve().parent.parent / "examples" / "reck_4x4.phon"
     src = phon_path.read_text(encoding="utf-8")
     cfg = to_config(parse(src))
     
