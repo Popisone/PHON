@@ -1,0 +1,9 @@
+flow main {
+  // 3x3 Reck Mesh
+  // MZI 1 (fibers 0, 1)
+  mzi m1 { theta: 0.7854; phi: 0.0; input: "x0"; }
+  // MZI 2 (fibers 1, 2)
+  mzi m2 { theta: 1.0472; phi: 1.5708; input: "m1_out1"; }
+  // MZI 3 (fibers 0, 1)
+  mzi m3 { theta: 0.5236; phi: 0.0; input: "m1_out0"; }
+}
