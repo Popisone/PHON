@@ -1,11 +1,11 @@
 cff-version: 1.2.0
 message: "If you use PHON in your research, please cite this repository."
-title: "PHON: A Domain-Specific Language for Photonic Circuit Design and Optical Neural Network Inference"
+title: "PHON: A Domain-Specific Language for Photonic and Phononic Wave Simulation with Neural Network Inference"
 abstract: >-
-  PHON is an open-source DSL for photonic circuit design and optical neural network inference. A single source compiles to simulation, GDSII layout export, and (as of v0.10.0) neural network inference via layer/propagate primitives with numpy-backed matmul.
-  v0.10.0 supports photonic (optical) media; phononic (acoustic) support is planned for Phase 5.5 via a unified `medium kind` attribute, which will dispatch physics constants (refractive index, sound velocity) without changing the computation.
-  v0.10.0 simulates on CPU; physical deployment (photonic chips, SAW devices) is future work. A companion pipeline (PHON-LLM, separate repository) provides natural-language frontends: 135M LoRA-tuned code generation with constrained decoding (98% syntax validity) and hybrid parameter extraction (regex + Qwen-0.5B/Outlines CFG, 100% on curated and novel eval sets).
-  Phase 5 (v0.10.0) achieves 97.78% MNIST test accuracy with 0 mismatches versus scikit-learn predictions on a 100-sample audit set.
+  PHON is an open-source DSL for photonic and phononic circuit design and neural network inference. A single source compiles to simulation, GDSII layout export, and neural network inference via layer/propagate primitives with numpy-backed matmul.
+  As of v0.10.1, PHON natively supports both photonic (optical) and phononic (acoustic) media through a unified `medium kind` attribute, dispatching physics constants (refractive index, sound velocity) without changing the computation, enabling cross-medium weight transfer.
+  v0.10.1 simulates on CPU; physical deployment (photonic chips, SAW devices) is future work.
+  Phase 5 (v0.10.0) achieves 97.78% MNIST test accuracy with 0 mismatches versus scikit-learn predictions on a 100-sample audit set. The test suite includes 148 passing tests.
 authors:
   - family-names: "Georgiev"
     given-names: "Georgi"
@@ -14,8 +14,8 @@ repository-code: "https://github.com/Popisone/PHON"
 url: "https://github.com/Popisone/PHON"
 license: Apache-2.0
 license-url: "https://github.com/Popisone/PHON/blob/main/LICENSE"
-version: "0.10.0"
-date-released: "2026-11-01"
+version: "0.10.1"
+date-released: "2026-11-02"
 keywords:
   - photonics
   - phononics

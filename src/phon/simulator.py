@@ -98,6 +98,8 @@ class Simulator:
         base_dir: Optional[Path] = None,
     ) -> None:
         self.config = config
+        self.medium_kind = (config.get('medium') or {}).get('kind', 'photonic')
+        self.velocity = 299792458.0 if self.medium_kind == 'photonic' else 343.0
         self.bands: Dict[str, Signal] = {}
         self.buses: Dict[str, Signal] = {}
         self.resonators: Dict[str, Signal] = {}

@@ -37,6 +37,7 @@ class SemanticAnalyzer:
         self.layers: Dict[str, Layer] = {}
 
     def analyze(self) -> List[Diagnostic]:
+        self._check_medium_kind()
         self._build_component_table()
         self._check_duplicate_components()
         self._check_interfere_references()
@@ -63,12 +64,23 @@ class SemanticAnalyzer:
         return not self.errors()
 
     def validate(self) -> None:
+        self._check_medium_kind()
         errs = self.errors()
         if errs:
             raise SemanticError("; ".join(str(e) for e in errs))
 
     def _error(self, message: str, where: str = "") -> None:
         self.diagnostics.append(Diagnostic("error", message, where))
+
+
+    def _check_medium_kind(self) -> None:
+        """Validate medium.kind if present. Defaults to 'photonic'."""
+        if self.program.medium is None:
+            return
+        kind = self.program.medium.fields.get("kind", "photonic").strip("'\"")
+        if kind not in ("photonic", "acoustic"):
+            raise SemanticError(f"Invalid medium kind: '{kind}'. Allowed values: 'photonic', 'acoustic'.")
+
 
     def _build_component_table(self) -> None:
         for c in self.program.components:
