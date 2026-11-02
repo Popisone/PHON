@@ -1,12 +1,14 @@
 # PHON
 
+> A domain-specific language for photonic and phononic wave simulation with neural network inference.
+
 **A Python-like DSL for photonic circuits — design, simulate, verify, export to GDSII.**
 
-[![Tests](https://img.shields.io/badge/tests-137%20passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-0.9.3-blue)]()
+[![Tests](https://img.shields.io/badge/tests-145%20passing-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-0.10.0-blue)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0%20%2F%20CC%20BY--SA%204.0-green)]()
 
-PHON is an open standard and reference implementation for describing photonic systems at a high level. Write <code>.phon</code> code, simulate physics, export to GDSII.
+PHON is an open-source DSL and reference implementation for describing photonic systems at a high level. Write <code>.phon</code> code, simulate physics, export to GDSII.
 
 > **New to photonics?** Start with [Quickstart](#quickstart).
 > **Design PICs already?** Jump to [What is PHON](#what-is-phon).
@@ -83,14 +85,14 @@ AST
 JSON config  ───►  phon.simulator.Simulator  ───►  numbers
    │
    ▼  phon.gds_export
-GDSII layout (KLayout / fab-ready)
+GDSII layout (viewable in KLayout)
 ~~~
 
 **Components** are physical things: <code>waveguide</code>, <code>resonator</code>, <code>interferometer</code>, <code>splitter</code>, <code>detector</code>, <code>compressor</code>, <code>channel</code>.
 
 **Flow** is code: <code>band</code>, <code>emit</code>, <code>interfere</code>, <code>compress</code>, <code>transmit</code>, <code>if</code>, <code>for</code>, <code>while</code>, <code>let</code>, <code>return</code>.
 
-PHON is **Turing-complete**: <code>examples/register8.phon</code> implements an 8-bit register in pure DSL, no external compute primitives.
+PHON **supports imperative control flow (if/for/while), mutable state, and composition of named blocks**: <code>examples/register8.phon</code> implements an 8-bit register in pure DSL, no external compute primitives.
 
 ---
 
@@ -108,13 +110,13 @@ python -c "from phon.gds_export import export; export('examples/and_gate.phon', 
 klayout and_gate.gds    # visual verification
 ~~~
 
-Same source → simulation **and** layout. No other open-source DSL does both.
+Same source → simulation **and** layout. Unlike existing PIC tools where simulation and layout are separate pipelines, PHON derives both from a single declarative source.
 
 ---
 
 ## Physics
 
-<code>transmit</code> uses a Shannon-inspired throughput model:
+<code>transmit</code> uses an engineering surrogate throughput model:
 
 ~~~
 C = B · log2(1 + SNR) · log2(1 + compression_ratio) · path_gain
@@ -145,7 +147,7 @@ Outside this range, the ML surrogate extrapolates poorly.
 
 ## ML surrogate
 
-Train a Random Forest on simulator outputs, export to ONNX for 1600x speedup:
+Train a Random Forest on simulator outputs, export to ONNX for 1600x speedup versus the full simulator on 1000 random configs:
 
 ~~~bash
 python integration_artifacts/build_artifacts.py    # generates phon_model.onnx
@@ -252,8 +254,8 @@ python scripts/test_examples.py
 
 ## Status
 
-- Version **0.9.3** (pre-1.0 — expect breaking changes)
-- **137 tests** passing
+- Version **0.10.0** (pre-1.0 — expect breaking changes)
+- **145 tests** passing
 - GDSII export via <code>gdstk</code>
 - ML surrogate via <code>scikit-learn</code> + <code>onnxruntime</code>
 - Handoff protocol in <code>HANDOFF*.md</code> files
@@ -269,7 +271,7 @@ python -m venv .venv
 .venv\Scripts\activate           # Windows
 # source .venv/bin/activate      # Unix
 pip install -e .
-python -m pytest tests\ -q       # 137 passed
+python -m pytest tests\ -q       # 145 passed
 ~~~
 
 **Requirements:** Python 3.10+, <code>lark</code>, <code>numpy</code>, <code>scikit-learn</code>, <code>onnxruntime</code>, <code>gdstk</code>.
@@ -287,3 +289,32 @@ python -m pytest tests\ -q       # 137 passed
 
 - **GitHub:** https://github.com/Popisone/PHON
 - **Changelog:** <code>CHANGELOG.md</code>
+
+## Scope, licenses, and non-claims
+
+### What PHON v0.10.0 is
+- DSL with parser, semantic checker, emitter, and CPU simulator
+- Photonic **and** phononic media via unified `medium kind: ...` attribute
+- Neural network inference via `layer`/`propagate` (numpy matmul)
+- GDSII layout export (viewable in KLayout)
+- Companion LLM frontend (PHON-LLM, separate repo)
+
+### What PHON v0.10.0 is not
+- Not a physical photonic or phononic hardware implementation
+- Not a compiler to real MZI mesh / SAW IDT configurations (future phase)
+- Not a replacement for Lumerical, Tidy3D, COMSOL, or gdsfactory
+- Not fabrication-ready without PDK-specific DRC and layer mapping
+
+### Licenses
+- **Code:** Apache-2.0 (see `LICENSE`)
+- **Written specification:** CC BY-SA 4.0 (see `SPEC.md` header, if present)
+- **Third-party components:** see `NOTICE`
+
+### Verified results
+- 145 passing tests (`pytest tests/`)
+- MNIST test accuracy 97.78%, 0 mismatches vs scikit-learn on 100-sample audit
+- Code generation: 49/50 syntax valid, 47/50 semantic (v2 + CFG)
+- Parameter extraction: 20/20 curated, 30/30 novel (hybrid pipeline)
+
+### History
+PHON was originally developed as a phononic (acoustic) DSL in early versions. It was later expanded to photonic circuits and, in v0.10.0, unified as a medium-agnostic wave-computation DSL.
