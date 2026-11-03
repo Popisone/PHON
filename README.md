@@ -153,5 +153,5 @@ PHON was originally developed as a phononic (acoustic) DSL in early versions. It
 ## Links
 
 - GitHub: https://github.com/Popisone/PHON
-- Zenodo: https://doi.org/10.5281/zenodo.23889072
+- Zenodo: https://doi.org/10.5281/zenodo.23916015
 - Changelog: CHANGELOG.md
