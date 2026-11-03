@@ -2,6 +2,64 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.14.0] - 2026-11-03
+
+### Added
+- `for` and `while` loops verified to execute in simulator (3 new tests).
+  - `for i from 0 to 3 { ... }` -- grammar + emitter + simulator.
+  - `while (cond) { ... }` -- grammar + emitter + simulator.
+- Reck decomposition scalable to N=64 and N=128 (12 new tests).
+  - N=64: 2,016 MZIs, Frobenius err < 1e-10.
+  - N=128: 8,128 MZIs, Frobenius err < 1e-10, decomp ~5.9s on 8-core CPU.
+- `.gitattributes` with `export-ignore` for handoff files.
+- `MANIFEST.in` to exclude handoffs, backups, secrets from sdist.
+
+### Tests
+- 190 -> 203 passing, 1 skipped (diagnostic).
+- `test_loops_sim.py`: 3 new tests for for/while loops.
+- `test_reck_perf.py`: extended from N in {16,32} to N in {16,32,64,128}.
+
+### Security
+- Git history clean (handoffs never tracked).
+- v0.13.0 Zenodo artifact contains 3 handoff files -- now marked Restricted.
+- v0.14.0 artifact is clean (git archive only).
+
+### Breaking
+- None. All APIs unchanged.
+
+## [0.13.0] - 2026-11-02
+
+### Added
+- Full Reck 1994 decomposition for arbitrary U(N).
+- `reck_decompose(U)` and `reconstruct_from_ops(ops, N)`.
+- `phase_apply` statement in grammar, AST, emitter, simulator.
+- Hybrid photonic-phononic syntax (GHz and THz accepted identically).
+- Speed emulator (v1/v2/v3) with real CPU benchmark.
+
+### Tests
+- 184 passing (was 137 in v0.10.0).
+
+### Physics
+- Phase-accurate superposition verified with 9 phases.
+- Frequency-agnostic behavior documented (MHz not supported, only GHz/THz).
+
+## [0.12.0] - 2026-11-01 (approximate)
+
+### Added
+- MZI mesh prototype (Phase 6).
+- Single-input fidelity verified for 3x3, 4x4, 8x8 Givens meshes.
+
+### Tests
+- ~160 passing.
+
+## [0.11.0] - 2026-11-01 (approximate)
+
+### Added
+- GDS export via `gdstk` (Phase 6.3).
+- PDK layer definitions.
+
+### Tests
+- ~150 passing.
 ## [0.10.0] - 2026-11-01
 
 ### Added - Phase 5: Optical Neural Networks (inference)
@@ -50,9 +108,9 @@ behave exactly as in v0.9.9.
 ## [0.9.9] - 2026-10-31
 
 ### Added
-- **WDM (Wavelength Division Multiplexing)** — `wdm` operator + `Signal.wdm_channels`
-  - `wdm(input) into 64 channels -> parallel;` — split into N parallel wavelengths
-  - `transmit(parallel) via fiber -> received;` — throughput xN
+- **WDM (Wavelength Division Multiplexing)** РІР‚вЂќ `wdm` operator + `Signal.wdm_channels`
+  - `wdm(input) into 64 channels -> parallel;` РІР‚вЂќ split into N parallel wavelengths
+  - `transmit(parallel) via fiber -> received;` РІР‚вЂќ throughput xN
   - Physical basis: real DWDM has 80-160 channels, 1-4 Tbps total
 
 ### Physics (verified linear speedup)
@@ -94,8 +152,8 @@ behave exactly as in v0.9.9.
 
 ### Added
 - **Optical memory** (`store` operator + `memory_cell` component)
-  - `memory_cell m1 { retention_ms: 10; }` — defines a retention cell
-  - `store(input) in m1 for 5ms -> output;` — holds signal for duration
+  - `memory_cell m1 { retention_ms: 10; }` РІР‚вЂќ defines a retention cell
+  - `store(input) in m1 for 5ms -> output;` РІР‚вЂќ holds signal for duration
   - Physics: exponential decay `amplitude *= exp(-duration_ms / retention_ms)`
   - `examples/memory_optical.phon`: 5ms in 10ms cell -> 0.6065x amplitude
 
@@ -111,8 +169,8 @@ behave exactly as in v0.9.9.
 
 ### Changed (BREAKING)
 - `transmit` physics: realistic link budget with 16-QAM + FEC
-  - Before (v0.9.3): `speed = B · log2(1+SNR) · comp · path` (Shannon ideal, unreachable)
-  - After (v0.9.5): `speed = B · min(log2(1+SNR), log2(modulation_order)) · (1-fec_rate) · comp · path`
+  - Before (v0.9.3): `speed = B Р’В· log2(1+SNR) Р’В· comp Р’В· path` (Shannon ideal, unreachable)
+  - After (v0.9.5): `speed = B Р’В· min(log2(1+SNR), log2(modulation_order)) Р’В· (1-fec_rate) Р’В· comp Р’В· path`
 - V04 demo (bw=2, ratio=4): 27.55 -> 15.56 Gbps (realistic 16-QAM with 6% FEC)
 
 ### Added
@@ -138,7 +196,7 @@ behave exactly as in v0.9.9.
 
 ### Fixed
 - `detect` can now be used as an expression (previously only worked as a statement hack)
-- Backward compatible with `detect(x)` syntax — both forms parse correctly
+- Backward compatible with `detect(x)` syntax РІР‚вЂќ both forms parse correctly
 
 ### Changed
 - Grammar: `detect_expr` supports optional parens: `detect x` OR `detect(x)`
@@ -165,7 +223,7 @@ behave exactly as in v0.9.9.
 
 ### Known limitations
 - RF extrapolates poorly for `bw < 1 GHz` (outside training range).
-  Valid range documented: `bw ∈ [1, 40] GHz`.
+  Valid range documented: `bw РІв‚¬в‚¬ [1, 40] GHz`.
 - 137 tests still passing.
 
 ## [0.9.2] - 2026-10-30

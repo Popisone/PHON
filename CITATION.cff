@@ -14,7 +14,7 @@ repository-code: "https://github.com/Popisone/PHON"
 url: "https://github.com/Popisone/PHON"
 license: Apache-2.0
 license-url: "https://github.com/Popisone/PHON/blob/main/LICENSE"
-version: "0.13.0"
+version: "0.14.0"
 date-released: "2026-11-02"
 keywords:
   - photonics
