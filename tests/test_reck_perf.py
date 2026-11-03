@@ -1,4 +1,4 @@
-"""Scalability smoke tests for Reck decomposition (N=16, N=32).
+"""Scalability smoke tests for Reck decomposition (N=16, 32, 64, 128).
 
 Not a benchmark suite - proves that:
   1. reck_decompose + reconstruct_from_ops still work for larger N
@@ -26,7 +26,7 @@ def _random_unitary(n: int, seed: int = 0) -> np.ndarray:
     return q
 
 
-@pytest.mark.parametrize("n", [16, 32])
+@pytest.mark.parametrize("n", [16, 32, 64, 128])
 def test_reck_reconstruct_large(n):
     """Reck decomposition reconstructs U(n) to machine precision."""
     u = _random_unitary(n, seed=n)
@@ -43,16 +43,16 @@ def test_reck_reconstruct_large(n):
     n_mzi = n * (n - 1) // 2
 
     print(
-        f"\n  N={n:2d} | MZIs={n_mzi:4d} | ops={len(ops):4d} | "
-        f"decomp={t_decomp * 1000:8.2f} ms | "
-        f"recon={t_rec * 1000:8.2f} ms | "
+        f"\n  N={n:3d} | MZIs={n_mzi:5d} | ops={len(ops):5d} | "
+        f"decomp={t_decomp * 1000:9.2f} ms | "
+        f"recon={t_rec * 1000:9.2f} ms | "
         f"Frob err={err:.2e}"
     )
 
     assert err < 1e-10, f"N={n}: Frobenius error too large: {err:.2e}"
 
 
-@pytest.mark.parametrize("n", [16, 32])
+@pytest.mark.parametrize("n", [16, 32, 64, 128])
 def test_reck_op_count(n):
     """Op count matches Reck 1994: N(N-1)/2 MZIs + N phases."""
     u = _random_unitary(n, seed=n + 1)
@@ -72,7 +72,7 @@ def test_reck_op_count(n):
     assert len(ops) == expected_mzi + expected_phase
 
 
-@pytest.mark.parametrize("n", [16, 32])
+@pytest.mark.parametrize("n", [16, 32, 64, 128])
 def test_reck_unitarity_preserved(n):
     """Reconstructed matrix must still be unitary."""
     u = _random_unitary(n, seed=n + 2)
