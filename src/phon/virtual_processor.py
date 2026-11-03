@@ -20,6 +20,7 @@ from phaseshift import clements_interferometer as ci
 
 from phon.reck import reck_decompose, reconstruct_from_ops
 from phon.clements import run_clements, run_clements_unitary
+from phon.loss_models import LossModel, ThetaScalingLoss
 
 
 class VirtualPhotonicProcessor:
@@ -39,6 +40,7 @@ class VirtualPhotonicProcessor:
         architecture: str = "clements",
         medium: str = "photonic",
         loss_db_per_m: Optional[float] = None,
+        loss_model: Optional[LossModel] = None,
         seed: Optional[int] = None,
     ):
         if architecture not in ("reck", "clements"):
@@ -52,13 +54,18 @@ class VirtualPhotonicProcessor:
 
         self.architecture = architecture
         self.medium = medium
-        if loss_db_per_m is None:
-            loss_db_per_m = 0.2 if medium == "photonic" else 0.5
-        self.loss_db_per_m = float(loss_db_per_m)
+        if loss_model is None:
+            if loss_db_per_m is None:
+                loss_db_per_m = 0.2 if medium == "photonic" else 0.5
+            loss_model = ThetaScalingLoss(loss_db_per_m=loss_db_per_m)
+        self.loss_model = loss_model
+        self.loss_db_per_m = getattr(loss_model, "loss_db_per_m", None)
         self.seed = seed
 
         self._U: Optional[np.ndarray] = None
         self._circuit = None
+        self._circuit_transformed = None
+        self._amplitude_scale = 1.0
         self._D: Optional[np.ndarray] = None
         self._n_modes: Optional[int] = None
         self._loss_factor: Optional[float] = None
@@ -75,28 +82,36 @@ class VirtualPhotonicProcessor:
             raise ValueError("U is not unitary")
 
         if self.architecture == "reck":
-            ops = reck_decompose(U)
-            total_length_m = len(ops) * 1e-3
-            loss_factor = 10 ** (-self.loss_db_per_m * total_length_m / 10)
-            self._circuit = [
-                {**op, "theta": op["theta"] * loss_factor}
-                if op["type"] == "mzi_apply" else op
-                for op in ops
-            ]
+            raw_circuit = reck_decompose(U)
+            # Filter to MZI ops only for loss model transform
             self._D = None
         else:  # clements
             decomp = ci.clements_decomposition(U)
-            total_length_m = len(decomp.circuit) * 1e-3
-            loss_factor = 10 ** (-self.loss_db_per_m * total_length_m / 10)
-            self._circuit = [
-                mz._replace(theta=mz.theta * loss_factor)
-                for mz in decomp.circuit
-            ]
+            raw_circuit = decomp.circuit
             self._D = decomp.D
 
+        # Apply loss model (transforms theta and/or returns amplitude scale)
+        if self.architecture == "reck":
+            mzi_ops = [op for op in raw_circuit if op["type"] == "mzi_apply"]
+            phase_ops = [op for op in raw_circuit if op["type"] == "phase_apply"]
+            mzi_transformed, self._amplitude_scale = self.loss_model.transform_circuit(
+                mzi_ops, n
+            )
+            # Recombine preserving original order
+            mzi_iter = iter(mzi_transformed)
+            self._circuit_transformed = [
+                next(mzi_iter) if op["type"] == "mzi_apply" else op
+                for op in raw_circuit
+            ]
+        else:
+            self._circuit_transformed, self._amplitude_scale = self.loss_model.transform_circuit(
+                raw_circuit, n
+            )
+
+        self._circuit = raw_circuit
         self._U = U
         self._n_modes = n
-        self._loss_factor = loss_factor
+        self._loss_factor = self._amplitude_scale
 
     # -- execute ----------------------------------------------------------
 
@@ -120,19 +135,27 @@ class VirtualPhotonicProcessor:
             raise RuntimeError("Call load_unitary() before run()")
         state = self._prepare_state(input_state)
         if self.architecture == "reck":
-            U_lossy = reconstruct_from_ops(self._circuit, self._n_modes)
+            U_lossy = self._amplitude_scale * reconstruct_from_ops(
+                self._circuit_transformed, self._n_modes
+            )
             return U_lossy @ state
-        return run_clements(
-            self._circuit, input_state=state, N=self._n_modes, D=self._D
+        state_out = run_clements(
+            self._circuit_transformed, input_state=state,
+            N=self._n_modes, D=self._D
         )
+        return self._amplitude_scale * state_out
 
     def get_effective_unitary(self) -> np.ndarray:
         """Returns the effective (lossy) unitary matrix."""
         if self._circuit is None:
             raise RuntimeError("Call load_unitary() before get_effective_unitary()")
         if self.architecture == "reck":
-            return reconstruct_from_ops(self._circuit, self._n_modes)
-        return run_clements_unitary(self._circuit, self._D, self._n_modes)
+            U = reconstruct_from_ops(self._circuit_transformed, self._n_modes)
+        else:
+            U = run_clements_unitary(
+                self._circuit_transformed, self._D, self._n_modes
+            )
+        return self._amplitude_scale * U
 
     def get_probabilities(self, input_state: Optional[np.ndarray] = None) -> np.ndarray:
         """Returns Fock-basis probabilities (sums to 1)."""
@@ -175,6 +198,7 @@ class VirtualPhotonicProcessor:
             "n_modes": self._n_modes,
             "loss_db_per_m": self.loss_db_per_m,
             "loss_factor": self._loss_factor,
+            "loss_model": self.loss_model.describe(),
             "n_ops": len(self._circuit),
         }
 
