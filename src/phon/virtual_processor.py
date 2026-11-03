@@ -21,6 +21,7 @@ from phaseshift import clements_interferometer as ci
 from phon.reck import reck_decompose, reconstruct_from_ops
 from phon.clements import run_clements, run_clements_unitary
 from phon.loss_models import LossModel, ThetaScalingLoss
+from phon.nonlinearity import get_activation
 
 
 class VirtualPhotonicProcessor:
@@ -156,6 +157,60 @@ class VirtualPhotonicProcessor:
                 self._circuit_transformed, self._D, self._n_modes
             )
         return self._amplitude_scale * U
+
+    def forward_mlp(
+        self,
+        input_vector: np.ndarray,
+        activation: str = "relu",
+    ) -> np.ndarray:
+        """
+        Single-layer forward pass with nonlinear activation.
+
+        This is the minimal "photonic neuron": matvec (MZI mesh) + activation.
+        Without activation, multiple layers collapse to one linear transform.
+        With activation, the network can learn nonlinear functions (e.g., XOR).
+
+        Parameters
+        ----------
+        input_vector : np.ndarray, shape (N,)
+        activation : str, one of relu, leaky_relu, sigmoid, tanh, softplus,
+                     intensity, linear
+
+        Returns
+        -------
+        np.ndarray, shape (N,)
+        """
+        act_fn = get_activation(activation)
+        # Photonic matvec (with loss model applied)
+        pre_activation = self.run(input_state=input_vector)
+        return act_fn(pre_activation)
+
+    def forward_mlp_batch(
+        self,
+        X: np.ndarray,
+        activation: str = "relu",
+    ) -> np.ndarray:
+        """
+        Batch forward pass: apply to each column of X independently.
+
+        Parameters
+        ----------
+        X : np.ndarray, shape (N, batch_size)
+
+        Returns
+        -------
+        np.ndarray, shape (N, batch_size)
+        """
+        if X.ndim != 2:
+            raise ValueError(f"X must be 2D, got shape {X.shape}")
+        if X.shape[0] != self._n_modes:
+            raise ValueError(
+                f"X must have {self._n_modes} rows, got {X.shape[0]}"
+            )
+        U_eff = self.get_effective_unitary()
+        pre_activation = U_eff @ X
+        act_fn = get_activation(activation)
+        return act_fn(pre_activation)
 
     def get_probabilities(self, input_state: Optional[np.ndarray] = None) -> np.ndarray:
         """Returns Fock-basis probabilities (sums to 1)."""
