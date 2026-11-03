@@ -85,3 +85,6 @@ config/local.*
 *.p12
 secrets/
 config/local.*
+
+# Local backups (handoff archive, old releases)
+backups/
