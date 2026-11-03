@@ -47,3 +47,41 @@ phon-v*-release.zip
 *.jsonl
 
 examples/mnist/mnist.npz
+
+# Handoff files — NEVER publish
+/HANDOFF*.md
+/HANDOFF*.txt
+/handoffs/
+/handoffs-archive/
+**/HANDOFF*.md
+**/HANDOFF*.txt
+
+# Backups and secrets
+*.bak-*
+*.bak
+*.log
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets/
+config/local.*
+
+# Handoff files - NEVER publish
+/HANDOFF*.md
+/HANDOFF*.txt
+/handoffs/
+/handoffs-archive/
+**/HANDOFF*.md
+**/HANDOFF*.txt
+*.bak-*
+*.bak
+*.log
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets/
+config/local.*

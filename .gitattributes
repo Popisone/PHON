@@ -1,0 +1,16 @@
+# Never include in git archive (Zenodo / arXiv / GitHub release)
+HANDOFF*          export-ignore
+handoffs/         export-ignore
+handoffs-archive/ export-ignore
+*.bak-*           export-ignore
+*.bak             export-ignore
+*.log             export-ignore
+.env              export-ignore
+.env.*            export-ignore
+secrets/          export-ignore
+.venv*/           export-ignore
+__pycache__/      export-ignore
+*.pyc             export-ignore
+.gitignore        export-ignore
+.gitattributes    export-ignore
+.github/          export-ignore

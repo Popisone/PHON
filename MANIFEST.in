@@ -1,0 +1,14 @@
+exclude HANDOFF*
+exclude *.bak-*
+exclude *.bak
+exclude *.log
+exclude .env
+exclude .env.*
+prune handoffs
+prune handoffs-archive
+prune .venv
+prune __pycache__
+prune .github
+global-exclude HANDOFF*
+global-exclude *.pyc
+global-exclude *.bak-*
