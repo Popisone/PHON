@@ -2,6 +2,32 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.23.0] - 2026-11-04
+
+### Added (Level 2 - Usable DSL)
+
+- CLI: `phon run`, `phon compile`, `phon test`, `phon --version`
+- Installation guide: `docs/installation.md`
+- Getting started: `docs/getting-started.md`
+- Reference docs for 10 operators:
+  - medium, component, flow, emit, interfere, detect, mzi, layer, propagate
+- 3 tutorials:
+  - 01-first-photon.md
+  - 02-mzi-mesh.md
+  - 03-reck-decomposition.md
+- Formal grammar spec: `docs/spec/grammar.ebnf`
+- Semantic rules: `docs/spec/semantics.md`
+- Structured errors: `PhonError` with line/column/code/suggestion
+- Type stubs (`.pyi`) for parser, simulator, emitter, ast_nodes
+
+### Changed
+
+- Version: 0.22.0 -> 0.23.0
+
+### Tests
+
+- 257 passing, 1 skipped
+
 ## [0.22.0] - 2026-11-04
 
 ### Added

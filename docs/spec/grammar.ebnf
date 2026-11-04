@@ -1,0 +1,40 @@
+(* PHON grammar specification v0.22.0 *)
+(* EBNF notation: { x } = zero or more, [ x ] = optional *)
+
+program        = { declaration } ;
+declaration    = medium_def | component_def | flow_def | layer_def ;
+
+medium_def     = "medium" IDENT "kind" ("photonic" | "phononic") ";" ;
+component_def  = "component" IDENT "type" component_kind ";" ;
+flow_def       = "flow" "main" "{" { statement } "}" ;
+layer_def      = "layer" IDENT ":" NUMBER "->" NUMBER "weights=" STRING "activation=" activation ";" ;
+
+component_kind = "waveguide" | "detector" | "resonator" | "compressor" | "channel" | "memory_cell" ;
+activation     = "relu" | "sigmoid" | "tanh" | "softmax" | "linear" ;
+
+statement      = emit_stmt
+               | interfere_stmt
+               | detect_stmt
+               | mzi_stmt
+               | let_stmt
+               | return_stmt
+               | for_stmt
+               | while_stmt
+               | if_stmt ;
+
+emit_stmt      = "emit" IDENT "@" "phase" NUMBER "->" IDENT ";" ;
+interfere_stmt = "interfere" IDENT "," IDENT "->" IDENT ";" ;
+detect_stmt    = "detect" IDENT "above" NUMBER "->" IDENT ";" ;
+mzi_stmt       = "mzi" "theta=" NUMBER "phi=" NUMBER "on" IDENT "," IDENT "->" IDENT "," IDENT ";" ;
+let_stmt       = "let" IDENT "=" expression ";" ;
+return_stmt    = "return" expression ";" ;
+for_stmt       = "for" IDENT "from" expression "to" expression "{" { statement } "}" ;
+while_stmt     = "while" expression "{" { statement } "}" ;
+if_stmt        = "if" expression "{" { statement } "}" [ "else" "{" { statement } "}" ] ;
+
+expression     = term { ("+" | "-" | "*" | "/" | "<" | ">" | "<=" | ">=" | "==" | "!=") term } ;
+term           = IDENT | NUMBER | "(" expression ")" ;
+
+IDENT          = /[A-Za-z_][A-Za-z0-9_]*/ ;
+NUMBER         = /[0-9]+(\.[0-9]+)?/ ;
+STRING         = /"[^"]*"/ ;

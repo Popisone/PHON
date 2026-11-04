@@ -1,0 +1,41 @@
+site_name: PHON
+site_description: Unified DSL for photonic and phononic wave computing
+site_url: https://github.com/Popisone/PHON
+repo_url: https://github.com/Popisone/PHON
+repo_name: Popisone/PHON
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: cyan
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Getting Started: getting-started.md
+  - Reference:
+    - Overview: reference/index.md
+    - medium: reference/medium.md
+    - component: reference/component.md
+    - flow: reference/flow.md
+    - emit: reference/emit.md
+    - interfere: reference/interfere.md
+    - detect: reference/detect.md
+    - mzi: reference/mzi.md
+    - layer: reference/layer.md
+    - propagate: reference/propagate.md
+  - Specification:
+    - Grammar (EBNF): spec/grammar.ebnf
+    - Semantics: spec/semantics.md
+  - Tutorials:
+    - Overview: ../tutorials/index.md
+    - 01 First Photon: ../tutorials/01-first-photon.md
+    - 02 MZI Mesh: ../tutorials/02-mzi-mesh.md
+    - 03 Reck: ../tutorials/03-reck-decomposition.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - tables
