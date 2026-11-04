@@ -1,4 +1,4 @@
-﻿# === Python ===
+# === Python ===
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -88,3 +88,44 @@ config/local.*
 
 # Local backups (handoff archive, old releases)
 backups/
+
+# Dev / private (not for release)
+mnist_data/
+test_mlp_corrected.py
+test_mnist_full.py
+bench_progress_results.txt
+bench_ai_corrected.py
+bench_corrected_depth.py
+bench_corrected_metrics.py
+bench_fixed.py
+bench_memory_techniques.py
+bench_progress.py
+paper/
+*.bak-*
+backups/
+
+# Security / Private IP (added 2026-11-04)
+*.pyc
+*.pyo
+__pycache__/
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+HANDOFF*
+handoff*
+IDEAS_BACKLOG*
+*_PRIVATE*
+PAPER_REFRAMING_DRAFT.md
+ZENODO_DESCRIPTION.md
+GITHUB_RELEASE_v*.md
+material_emulator.py
+chem_mixer.py
+private/
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+secrets.*
+credentials.*

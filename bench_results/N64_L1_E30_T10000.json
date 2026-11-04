@@ -1,0 +1,16 @@
+{
+  "N": 64,
+  "n_layers": 1,
+  "epochs": 30,
+  "train_size": 10000,
+  "test_size": 2000,
+  "explained_variance": 0.8625558614730835,
+  "logreg_test": 0.8905,
+  "digital_mlp_train": 0.9809,
+  "digital_mlp_test": 0.9385,
+  "photonic_train": 0.9669,
+  "photonic_test": 0.937,
+  "photonic_time_s": 257.429025888443,
+  "delta_vs_mlp": -0.0014999999999999458,
+  "delta_vs_logreg": 0.0465000000000001
+}

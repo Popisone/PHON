@@ -2,6 +2,28 @@
 
 All notable changes to PHON. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.22.0] - 2026-11-04
+
+### Added
+- Photonic MLP benchmark (`bench_N.py`) with multi-seed evaluation
+- Shared-theta regularization (`src/phon/shared_theta.py`)
+- Factorial benchmark (`bench_factorial.py`) — 36 runs across N, k, seeds
+- Coherent vs intensity detection comparison
+- `bench_results/` with all experimental data
+
+### Changed
+- `src/phon/loss_models.py` — minor fixes
+- Paper rewritten (24,992 bytes, 14 audit issues fixed)
+
+### Results
+- Shared-theta k=8 optimal at N=128 (0.9603 vs 0.9365 full mesh, p<0.01)
+- k=1 still beats full mesh (decisive regularization evidence)
+- Coherent detection essential: 0.9235 vs 0.6433 intensity (28 pp gap)
+- Photonic MLP comparable to digital MLP at N=64 (multi-seed)
+
+### Tests
+- 252 passing, 1 skipped
+
 ## [0.14.0] - 2026-11-03
 
 ### Added

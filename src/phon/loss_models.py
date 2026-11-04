@@ -172,3 +172,36 @@ class CombinedLoss(LossModel):
 def from_legacy(loss_db_per_m: float, medium: str = "photonic") -> LossModel:
     """Factory matching v0.15.0 behavior (theta-scaling)."""
     return ThetaScalingLoss(loss_db_per_m=loss_db_per_m)
+class ConstantPhaseErrorLoss(LossModel):
+    """
+    Constant phase error per MZI (independent of theta).
+
+    Models fabrication/calibration error as epsilon * N(0, 1) rad,
+    added to each theta. Shape error accumulates as sqrt(depth),
+    so Clements (depth=N) wins by factor sqrt((2N-3)/N) ~ sqrt(2).
+
+    This is more physically realistic than ThetaScalingLoss,
+    which assumes error proportional to theta.
+    """
+
+    def __init__(self, epsilon_rad: float = 0.01, seed: int = 0):
+        self.epsilon_rad = float(epsilon_rad)
+        self.seed = seed
+
+    def transform_circuit(self, circuit, N):
+        rng = np.random.default_rng(self.seed)
+        transformed = [
+            _replace_theta(
+                mz,
+                _get_theta(mz) + rng.normal(0, self.epsilon_rad),
+            )
+            for mz in circuit
+        ]
+        return transformed, 1.0
+
+    def describe(self):
+        return {
+            "type": "constant_phase_error",
+            "epsilon_rad": self.epsilon_rad,
+            "seed": self.seed,
+        }
