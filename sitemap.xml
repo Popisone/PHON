@@ -45,6 +45,10 @@
          <lastmod>2026-11-04</lastmod>
     </url>
     <url>
+         <loc>https://github.com/Popisone/PHON/reference/compress/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
          <loc>https://github.com/Popisone/PHON/reference/detect/</loc>
          <lastmod>2026-11-04</lastmod>
     </url>
@@ -53,7 +57,19 @@
          <lastmod>2026-11-04</lastmod>
     </url>
     <url>
+         <loc>https://github.com/Popisone/PHON/reference/fiber/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
          <loc>https://github.com/Popisone/PHON/reference/flow/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/for/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/if/</loc>
          <lastmod>2026-11-04</lastmod>
     </url>
     <url>
@@ -62,6 +78,10 @@
     </url>
     <url>
          <loc>https://github.com/Popisone/PHON/reference/layer/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/let/</loc>
          <lastmod>2026-11-04</lastmod>
     </url>
     <url>
@@ -77,7 +97,43 @@
          <lastmod>2026-11-04</lastmod>
     </url>
     <url>
+         <loc>https://github.com/Popisone/PHON/reference/return/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/store/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/transmit/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/wdm/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/reference/while/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
          <loc>https://github.com/Popisone/PHON/spec/semantics/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/tutorials/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/tutorials/01-first-photon/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/tutorials/02-mzi-mesh/</loc>
+         <lastmod>2026-11-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/Popisone/PHON/tutorials/03-reck-decomposition/</loc>
          <lastmod>2026-11-04</lastmod>
     </url>
 </urlset>
