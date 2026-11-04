@@ -155,3 +155,7 @@ PHON was originally developed as a phononic (acoustic) DSL in early versions. It
 - GitHub: https://github.com/Popisone/PHON
 - Zenodo: https://doi.org/10.5281/zenodo.23916015
 - Changelog: CHANGELOG.md
+        
+## AI Collaboration Disclaimer
+
+This project—including its source code, documentation, and the accompanying manuscript—was developed in close collaboration with AI language models (LLMs). The AI assisted with code generation, refactoring, mathematical derivations, and drafting. The human author (Georgi Georgiev) provided the original concept, architectural design, experimental validation, and maintained full oversight and responsibility for the final content.
