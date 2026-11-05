@@ -132,3 +132,6 @@ credentials.*
 # Bench results (data, not for PyPI)
 bench_results.txt
 bench_results/*.json
+
+# MkDocs build output
+site/

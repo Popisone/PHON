@@ -29,10 +29,10 @@ nav:
     - Grammar (EBNF): spec/grammar.ebnf
     - Semantics: spec/semantics.md
   - Tutorials:
-    - Overview: ../tutorials/index.md
-    - 01 First Photon: ../tutorials/01-first-photon.md
-    - 02 MZI Mesh: ../tutorials/02-mzi-mesh.md
-    - 03 Reck: ../tutorials/03-reck-decomposition.md
+    - Overview: tutorials/index.md
+    - 01 First Photon: tutorials/01-first-photon.md
+    - 02 MZI Mesh: tutorials/02-mzi-mesh.md
+    - 03 Reck: tutorials/03-reck-decomposition.md
 
 markdown_extensions:
   - admonition

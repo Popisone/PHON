@@ -7,7 +7,7 @@ PHON is a unified DSL for photonic and phononic wave computing.
 - [Installation](installation.md)
 - [Getting started](getting-started.md)
 - [Reference](reference/index.md) - all operators
-- [Tutorials](../tutorials/index.md) - step-by-step guides
+- [Tutorials](tutorials/index.md) - step-by-step guides
 
 ## What you can do
 
